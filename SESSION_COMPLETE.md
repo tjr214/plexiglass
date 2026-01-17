@@ -1,218 +1,104 @@
-# 🎉 Session 1 Complete - PlexiGlass Ready for Implementation!
+# 🎉 Session 2 Complete - Dashboard & Config Systems Delivered
 
-**Date**: January 16, 2026  
-**Session**: Initial Planning & Architecture  
+**Date**: January 17, 2026  
+**Session**: Sprint 1 + Sprint 2 Implementation  
 **Status**: ✅ **COMPLETE & VERIFIED**
 
 ---
 
 ## ✅ Progress Saved Successfully
 
-All progress has been saved and documented. You can safely start a new context window!
+All progress has been saved and documented. You can safely start a new context window.
 
 ### 📄 Key Documents to Read When Resuming
 
-1. **PROGRESS.md** - Complete development progress (read this FIRST!)
-2. **docs/SESSION_1_SUMMARY.md** - This session's summary
-3. **docs/LIVING_DOCS.md** - Living documentation with sprint planning
+1. **PROGRESS.md** - Current development progress (read first)
+2. **docs/SESSION_2_SUMMARY.md** - Session 2 summary
+3. **docs/LIVING_DOCS.md** - Living documentation & sprint plan
 4. **docs/ARCHITECTURE.md** - Technical architecture
-5. **README.md** - Project overview
+5. **README.md** - Project overview & setup
 
 ---
 
 ## 🎯 What We Accomplished
 
-### Foundation ✅
-- ✅ Project initialized as PlexiGlass
-- ✅ Python 3.13.7 + uv 0.9.18 setup
-- ✅ All dependencies installed
-- ✅ Tests passing (7 passed, 1 skipped)
-- ✅ 100% coverage on core modules
+### Sprint 1 Foundation ✅
+- ✅ Configuration loader + defaults
+- ✅ Server manager service
+- ✅ Base Textual app structure
+- ✅ Test suite foundation (TDD)
 
-### Planning ✅
-- ✅ Dual-purpose vision defined
-- ✅ 200+ API features mapped (15 categories)
-- ✅ Complete architecture designed
-- ✅ 6 sprints planned
-- ✅ Undo system specified
+### Sprint 2 Dashboard Mode ✅
+- ✅ Status cards with now-playing details
+- ✅ Dashboard summary with library stats
+- ✅ Active sessions panel
+- ✅ Real-time refresh loop
+- ✅ Health indicator (last update)
+- ✅ Quick Actions menu (button-based)
 
-### CLI & Installation ✅
-- ✅ CLI entry point created
-- ✅ System-wide installation configured
-- ✅ Commands: `--version`, `--help`, `--check-config`
-- ✅ Placeholder TUI app working
+### Command Prompt ✅
+- ✅ Modal screen with input + history
+- ✅ Suggestions with grouping + help text
+- ✅ Command buttons + partial-match resolution
+- ✅ Commands: refresh/connect/disconnect/edit_config/list_servers/list_libraries/quit
+- ✅ Keyboard shortcut ':' and ESC dismiss
 
-### Documentation ✅
-- ✅ README.md - Project homepage
-- ✅ LIVING_DOCS.md - Complete documentation
-- ✅ ARCHITECTURE.md - Technical design
-- ✅ API_FEATURES_MAP.md - Feature catalogue
-- ✅ servers.example.yaml - Config template
-- ✅ PROGRESS.md - Development tracking
-- ✅ SESSION_1_SUMMARY.md - Session recap
+### Config Wizard ✅
+- ✅ Blocking modal when config missing/invalid
+- ✅ Multi-server builder with live validation
+- ✅ Auto-fetched server names
+- ✅ Edit existing config flow
+- ✅ Writes to `~/.config/plexiglass/servers.yaml`
+
+### UI & Styling ✅
+- ✅ Dashboard CSS layout and theme
+- ✅ Modal styling for command prompt + config setup
 
 ---
 
-## 🚀 How to Resume in Next Session
+## 🧪 Test Status
 
-### Step 1: Verify Setup
+```
+Tests: 74 passed, 1 skipped
+Command: uv run pytest
+Coverage: ~76%
+```
+
+---
+
+## 🚀 How to Resume Next Session
+
+### 1. Sync deps
 ```bash
-cd /path/to/plexiglass
 uv sync --all-extras
-uv run pytest -v
 ```
 
-**Expected Result**: 7 passed, 1 skipped ✅
-
-### Step 2: Review Progress
+### 2. Run tests
 ```bash
-# Read these files:
-cat PROGRESS.md
-cat docs/SESSION_1_SUMMARY.md
-cat docs/LIVING_DOCS.md
+uv run pytest
 ```
 
-### Step 3: Start Sprint 1
-
-Tell the BMad Master:
+### 3. Start Sprint 3
 ```
-"I've read PROGRESS.md and I'm ready to begin Sprint 1: 
-Server Configuration & Foundation"
-```
-
-The Master will guide you through TDD implementation! 🧙
-
----
-
-## 📊 Final Verification
-
-### Tests Status
-```
-Tests: 7 passed, 1 skipped ✅
-Coverage: 100% on implemented modules ✅
-New modules at 0% (expected - Sprint 1 will fix)
-```
-
-### Project Status
-```
-Phase 1: Initialization ✅ COMPLETE
-Phase 2: Planning      ✅ COMPLETE
-Phase 3: Implementation 🔄 READY TO START
-```
-
-### File Count
-```
-Source Files: 7 ✅
-Test Files: 3 ✅
-Documentation: 7 ✅
-Configuration: 2 ✅
+"Let's begin Sprint 3: Gallery Foundation"
 ```
 
 ---
 
-## 🎓 Important Reminders
+## 🏆 Milestones Achieved
 
-### TDD Workflow
-1. 🔴 RED: Write failing test first
-2. 🟢 GREEN: Write minimal code to pass
-3. 🔵 REFACTOR: Improve while tests pass
-
-### Development Rules
-- ❌ No lazy placeholders
-- ✅ Read files before editing
-- ✅ Update Living Documentation
-- ✅ All tests in `tests/` directory
-- ✅ 80%+ coverage target
-- ✅ Python 3.13+ features
-
-### Configuration
-- **Dev**: `config/servers.yaml`
-- **Installed**: `~/.config/plexiglass/servers.yaml`
-- **Tokens**: Environment variables (never commit!)
+- ✅ Dashboard mode fully functional
+- ✅ Config wizard complete and blocking on missing config
+- ✅ Command prompt system fully wired
+- ✅ Quick Actions button UI stable
 
 ---
 
-## 🏗️ Sprint 1 Preview
-
-When you resume, you'll build:
-
-1. **YAML Configuration Loader**
-   - Load server configs
-   - Parse environment variables
-   - Validate configuration
-   - TDD: Write tests first!
-
-2. **Server Manager Service**
-   - Multi-server connection pool
-   - Health monitoring
-   - Server switching
-   - TDD: Test each feature!
-
-3. **Basic Textual App**
-   - App initialization
-   - Screen routing
-   - Keybindings
-   - TDD: UI testing!
-
----
-
-## 💎 What Makes PlexiGlass Special
-
-- 🎨 **Beautiful TUI** - Colorful, CSS-themed terminal UI
-- ↩️ **Safe Testing** - Built-in undo for all writes
-- 📚 **Complete Reference** - 200+ API features demonstrated
-- 🔒 **Safety First** - Read-only flags, confirmations
-- 🌍 **Professional Tool** - System-wide installation
-- 🧑‍💻 **Dual Purpose** - Production use + developer education
-
----
-
-## ✨ Session Statistics
-
-- **Duration**: ~2-3 hours
-- **Files Created**: 15+
-- **Lines Written**: 2,000+
-- **Features Mapped**: 200+
-- **Sprints Planned**: 6
-- **Test Coverage**: 100% (core)
-- **Documentation**: Complete
-
----
-
-## 🎬 Session End Checklist
-
-- ✅ All tests passing
-- ✅ Documentation complete
-- ✅ PROGRESS.md updated
-- ✅ Session summary created
-- ✅ Architecture documented
-- ✅ Features catalogued
-- ✅ Sprints planned
-- ✅ CLI configured
-- ✅ Ready for implementation
-
----
-
-## 📞 Contact & Handoff
-
-**Project**: PlexiGlass v0.1.0  
+**Session End**: ✅ Complete  
+**Next Session**: Sprint 3 - Gallery Foundation  
 **Maintainer**: Tim  
-**Assistant**: BMad Master 🧙  
-**Next Session**: Sprint 1 Implementation  
-**Status**: 🟢 Ready to Build
+**Assistant**: BMad Master 🧙
 
 ---
 
-**🎉 Congratulations on completing the foundation phase!**
-
-PlexiGlass is now fully planned, documented, and ready for TDD-driven implementation. 
-
-The foundation is solid. The vision is clear. The architecture is sound.
-
-**Time to build something amazing! 🚀**
-
----
-
-*Preserved by BMad Master 🧙*  
-*Session 1 Complete - January 16, 2026*  
-*See you in the next session!* ✨
+*Session 2 preserved successfully. Sleep well and recharge.*
