@@ -239,8 +239,8 @@ class TestMainScreen:
             await pilot.pause()
 
             # Assert
-            header = app.query_one("Header", None)
-            assert header is not None or len(list(app.query(".header"))) > 0
+            header = app.screen.query_one("Header")
+            assert header is not None
 
     @pytest.mark.asyncio
     async def test_main_screen_has_footer(self, sample_config_path: Path) -> None:
@@ -261,8 +261,8 @@ class TestMainScreen:
             await pilot.pause()
 
             # Assert
-            footer = app.query_one("Footer", None)
-            assert footer is not None or len(list(app.query(".footer"))) > 0
+            footer = app.screen.query_one("Footer")
+            assert footer is not None
 
 
 class TestGalleryScreen:
