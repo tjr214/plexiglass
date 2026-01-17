@@ -10,7 +10,7 @@ This module tests the Textual application including:
 """
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -310,37 +310,12 @@ class TestMainScreen:
             assert menu is not None
 
     @pytest.mark.asyncio
-    async def test_quick_actions_menu_triggers_connect(self, sample_config_path: Path) -> None:
+    async def test_main_screen_shows_command_prompt_panel(self, sample_config_path: Path) -> None:
         """
-        RED TEST: Quick actions should call connect action.
+        RED TEST: Should display command prompt panel.
 
         Expected behavior:
-        - Selecting connect action calls server manager connect
-        """
-        # Arrange
-        from plexiglass.app.plexiglass_app import PlexiGlassApp
-
-        app = PlexiGlassApp(config_path=sample_config_path)
-
-        # Act
-        with patch("plexiglass.app.plexiglass_app.ServerManager") as mock_manager:
-            mock_manager.return_value.connect_to_default.return_value = None
-            async with app.run_test() as pilot:
-                await pilot.pause()
-                menu = app.screen.query_one("QuickActionsMenu")
-                trigger_action = getattr(menu, "trigger_action")
-                trigger_action("connect_default")
-
-            # Assert
-            assert mock_manager.return_value.connect_to_default.called
-
-    @pytest.mark.asyncio
-    async def test_quick_actions_menu_triggers_refresh(self, sample_config_path: Path) -> None:
-        """
-        RED TEST: Quick actions should trigger refresh.
-
-        Expected behavior:
-        - Selecting refresh action triggers dashboard refresh
+        - Render command prompt widget
         """
         # Arrange
         from plexiglass.app.plexiglass_app import PlexiGlassApp
@@ -350,9 +325,57 @@ class TestMainScreen:
         # Act
         async with app.run_test() as pilot:
             await pilot.pause()
-            menu = app.screen.query_one("QuickActionsMenu")
-            trigger_action = getattr(menu, "trigger_action")
-            trigger_action("refresh")
+
+            # Assert
+            panel = app.screen.query_one("CommandPromptPanel")
+            assert panel is not None
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_triggers_connect(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should call connect action.
+
+        Expected behavior:
+        - Running connect command calls server manager connect
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.server_manager = MagicMock()
+            panel = app.screen.query_one("CommandPromptPanel")
+            run_command = getattr(panel, "run_command")
+            run_command("connect_default")
+            await pilot.pause()
+
+            # Assert
+            server_manager = app.server_manager
+            assert server_manager is not None
+            assert server_manager.connect_to_default.called
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_triggers_refresh(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should trigger refresh.
+
+        Expected behavior:
+        - Running refresh command triggers dashboard refresh
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            panel = app.screen.query_one("CommandPromptPanel")
+            run_command = getattr(panel, "run_command")
+            run_command("refresh")
             await pilot.pause()
 
             # Assert

@@ -122,6 +122,49 @@ class QuickActionsMenu(Static):
             self.action_key = action_key
 
 
+class CommandPromptPanel(Static):
+    """Popup command prompt panel for dashboard actions."""
+
+    def __init__(self, commands: list[str], **kwargs: Any) -> None:
+        super().__init__("", **kwargs)
+        self.commands = commands
+        self.last_output: str | None = None
+        self.add_class("command-prompt")
+
+    def on_mount(self) -> None:
+        self.update(self._render_prompt())
+
+    def update_commands(self, commands: list[str]) -> None:
+        self.commands = commands
+        self.update(self._render_prompt())
+
+    def set_output(self, output: str) -> None:
+        self.last_output = output
+        self.update(self._render_prompt())
+
+    def run_command(self, command: str) -> None:
+        self.post_message(self.CommandSubmitted(command.strip()))
+
+    def _render_prompt(self) -> str:
+        lines = ["Command Prompt"]
+        if self.commands:
+            lines.append("Commands:")
+            lines.extend(f"- {command}" for command in self.commands)
+        if self.last_output:
+            lines.append("Output:")
+            lines.append(self.last_output)
+        return "\n".join(lines)
+
+    class CommandSubmitted(Message):
+        """Message fired when a command is submitted."""
+
+        bubble = True
+
+        def __init__(self, command: str) -> None:
+            super().__init__()
+            self.command = command
+
+
 class ServerStatusCard(Static):
     """Server status widget for the dashboard."""
 
@@ -205,18 +248,22 @@ class MainScreen(Screen):
                 actions = self._build_quick_actions()
                 yield QuickActionsMenu(actions)
 
-                sessions = self._build_session_details()
-                yield SessionDetailsPanel(sessions)
+                commands = self._build_command_prompt_commands()
+                yield CommandPromptPanel(commands)
 
-            with Vertical(classes="status-list"):
-                server_names: list[str] = []
-                app = self.app
-                if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
-                    server_names = app.server_manager.get_all_server_names()
+            yield Static("", classes="panel-spacer")
 
-                for name in server_names:
-                    status = self._get_server_status(name)
-                    yield ServerStatusCard(status)
+            sessions = self._build_session_details()
+            yield SessionDetailsPanel(sessions)
+
+            server_names: list[str] = []
+            app = self.app
+            if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+                server_names = app.server_manager.get_all_server_names()
+
+            for name in server_names:
+                status = self._get_server_status(name)
+                yield ServerStatusCard(status)
 
         yield Footer()
 
@@ -243,18 +290,36 @@ class MainScreen(Screen):
     def on_quick_actions_menu_action_triggered(
         self, message: "QuickActionsMenu.ActionTriggered"
     ) -> None:
-        if message.action_key == "refresh":
+        self._handle_command(message.action_key)
+
+    def on_command_prompt_panel_command_submitted(
+        self, message: "CommandPromptPanel.CommandSubmitted"
+    ) -> None:
+        self._handle_command(message.command)
+
+    def _handle_command(self, command: str) -> None:
+        normalized = command.strip().lower()
+        if normalized in {"refresh", "refresh dashboard"}:
             self.last_manual_refresh = True
             self._refresh_dashboard()
+            self._set_command_output("Dashboard refreshed")
             return
-        elif message.action_key == "connect_default":
+        if normalized in {"connect", "connect_default", "connect default"}:
             app = self.app
             if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
                 app.server_manager.connect_to_default()
-        elif message.action_key == "open_gallery":
+                self._set_command_output("Connected to default server")
+            else:
+                self._set_command_output("No server manager available")
+            return
+        if normalized in {"gallery", "open gallery", "open_gallery"}:
             app = self.app
             if isinstance(app, PlexiGlassApp):
                 app.action_show_gallery()
+                self._set_command_output("Opened gallery")
+            return
+
+        self._set_command_output(f"Unknown command: {command}")
 
     def _refresh_dashboard(self) -> None:
         app = self.app
@@ -265,6 +330,9 @@ class MainScreen(Screen):
 
         actions_widget: QuickActionsMenu = self.query_one(QuickActionsMenu)
         actions_widget.update_actions(self._build_quick_actions())
+
+        commands_widget: CommandPromptPanel = self.query_one(CommandPromptPanel)
+        commands_widget.update_commands(self._build_command_prompt_commands())
 
         sessions_widget: SessionDetailsPanel = self.query_one(SessionDetailsPanel)
         sessions_widget.update_sessions(self._build_session_details())
@@ -331,6 +399,17 @@ class MainScreen(Screen):
             "Connect Default Server",
             "Open Gallery",
         ]
+
+    def _build_command_prompt_commands(self) -> list[str]:
+        return [
+            "refresh",
+            "connect_default",
+            "open_gallery",
+        ]
+
+    def _set_command_output(self, message: str) -> None:
+        panel: CommandPromptPanel = self.query_one(CommandPromptPanel)
+        panel.set_output(message)
 
     @staticmethod
     def _format_timestamp(timestamp: datetime) -> str:

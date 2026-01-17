@@ -44,7 +44,6 @@ Header, Footer {
 }
 
 .quick-actions {
-
     width: 28%;
     min-height: 8;
     background: $bg-panel;
@@ -67,6 +66,20 @@ Header, Footer {
 .status-list {
     layout: vertical;
     margin-top: 1;
+}
+
+.panel-spacer {
+    height: 1;
+}
+
+.command-prompt {
+    width: 28%;
+    min-height: 8;
+    background: $bg-panel;
+    border: tall $accent-cyan;
+    padding: 1 2;
+    color: $text-primary;
+    transition: background 300ms, color 300ms;
 }
 
 .status-card {
