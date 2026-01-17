@@ -194,6 +194,27 @@ class TestPlexiGlassApp:
         # Assert - Textual has built-in help, should work
         assert True
 
+    @pytest.mark.asyncio
+    async def test_app_has_command_prompt_keybinding(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should have command prompt keybinding.
+
+        Expected behavior:
+        - ':' key opens command prompt
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.press(":")
+            await pilot.pause()
+
+            # Assert
+            assert app.screen.__class__.__name__ == "CommandPromptScreen"
+
 
 class TestMainScreen:
     """Test suite for the MainScreen (Dashboard)."""
@@ -332,6 +353,54 @@ class TestMainScreen:
             assert app.screen.__class__.__name__ == "CommandPromptScreen"
 
     @pytest.mark.asyncio
+    async def test_command_prompt_esc_closes_modal(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: ESC should dismiss command prompt modal.
+
+        Expected behavior:
+        - ESC returns to main screen
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+            await pilot.press("escape")
+            await pilot.pause()
+
+            # Assert
+            assert app.screen.__class__.__name__ == "MainScreen"
+
+    @pytest.mark.asyncio
+    async def test_quick_actions_open_command_prompt(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Quick actions should open command prompt.
+
+        Expected behavior:
+        - Triggering command prompt action opens modal
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            menu = app.screen.query_one("QuickActionsMenu")
+            trigger_action = getattr(menu, "trigger_action")
+            trigger_action("open_command_prompt")
+            await pilot.pause()
+
+            # Assert
+            assert app.screen.__class__.__name__ == "CommandPromptScreen"
+
+    @pytest.mark.asyncio
     async def test_command_prompt_triggers_connect(self, sample_config_path: Path) -> None:
         """
         RED TEST: Command prompt should call connect action.
@@ -419,6 +488,34 @@ class TestMainScreen:
             history = getattr(screen, "history")
             assert "refresh" in history
             assert "open_gallery" in history
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_updates_autocomplete(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should update autocomplete suggestions.
+
+        Expected behavior:
+        - Typing text updates suggestion list
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            update_suggestions = getattr(screen, "_update_suggestions")
+            update_suggestions("re")
+            await pilot.pause()
+
+            # Assert
+            suggestions = screen.query_one("#command-suggestions")
+            assert "refresh" in str(suggestions.render())
 
     @pytest.mark.asyncio
     async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:

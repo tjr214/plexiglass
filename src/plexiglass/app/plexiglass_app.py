@@ -183,12 +183,15 @@ class CommandPromptScreen(Screen):
                     yield Static(f"- {command}")
             yield Static("History:", classes="modal-section")
             yield Static("", id="history")
+            yield Static("Suggestions:", classes="modal-section")
+            yield Static("", id="command-suggestions")
             yield Input(placeholder="Type a command and press enter", id="command-input")
             yield Static("", id="command-output")
 
     def on_mount(self) -> None:
         input_widget = self.query_one("#command-input", Input)
         input_widget.focus()
+        self._update_suggestions("")
 
     def submit_command(self, command: str) -> None:
         normalized = command.strip()
@@ -198,6 +201,7 @@ class CommandPromptScreen(Screen):
         if len(self.history) > 10:
             self.history = self.history[-10:]
         self.query_one("#history", Static).update("\n".join(self.history))
+        self._update_suggestions("")
         self.post_message(self.CommandSubmitted(normalized))
         if isinstance(self.app, PlexiGlassApp):
             self.app.post_message(self.CommandSubmitted(normalized))
@@ -205,11 +209,25 @@ class CommandPromptScreen(Screen):
 
     def set_output(self, output: str) -> None:
         self.last_output = output
-        self.query_one("#command-output", Static).update(output)
+        try:
+            self.query_one("#command-output", Static).update(output)
+        except Exception:
+            return
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         self.submit_command(event.value)
         event.input.value = ""
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        self._update_suggestions(event.value)
+
+    def _update_suggestions(self, text: str) -> None:
+        normalized = text.strip().lower()
+        matches = [command for command in self.commands if command.lower().startswith(normalized)]
+        if not normalized:
+            matches = self.commands
+        suggestions = "\n".join(matches) if matches else "No suggestions"
+        self.query_one("#command-suggestions", Static).update(suggestions)
 
     class CommandSubmitted(Message):
         """Message fired when a command is submitted."""
@@ -381,6 +399,16 @@ class MainScreen(Screen):
                 app.action_show_gallery()
                 self._set_command_output("Opened gallery")
             return
+        if normalized in {"command", "command prompt", "command_prompt", "open_command_prompt"}:
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.action_show_command_prompt()
+                if isinstance(app.screen, CommandPromptScreen):
+                    app.screen.set_output("Opened command prompt")
+            return
+        if normalized in {"quick actions", "open quick actions", "open_quick_actions"}:
+            self._set_command_output("Quick actions are available on the dashboard")
+            return
 
         if normalized in {"quit", "exit"}:
             app = self.app
@@ -467,6 +495,7 @@ class MainScreen(Screen):
             "Refresh Dashboard",
             "Connect Default Server",
             "Open Gallery",
+            "Open Command Prompt",
         ]
 
     def _build_command_prompt_commands(self) -> list[str]:
@@ -474,6 +503,7 @@ class MainScreen(Screen):
             "refresh",
             "connect_default",
             "open_gallery",
+            "open_command_prompt",
             "quit",
         ]
 
@@ -542,6 +572,7 @@ class PlexiGlassApp(App):
         ("g", "show_gallery", "Gallery"),
         ("m", "show_main", "Main"),
         ("escape", "show_main", "Main"),
+        (":", "show_command_prompt", "Command"),
         ("?", "help", "Help"),
     ]
 
