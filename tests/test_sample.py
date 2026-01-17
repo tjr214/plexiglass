@@ -8,7 +8,7 @@ This demonstrates the TDD Red-Green-Refactor cycle:
 """
 
 import pytest
-from plex_test.sample import hello_plex
+from plexiglass.sample import hello_plex
 
 
 class TestHelloPlex:

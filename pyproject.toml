@@ -1,11 +1,13 @@
 [project]
-name = "plex-test"
+name = "plexiglass"
 version = "0.1.0"
-description = "A Python project using python-plexapi for Plex Media Server automation"
+description = "PlexiGlass - A colorful Textual TUI dashboard and feature gallery for Plex Media Servers"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "PlexAPI>=4.17.2",
+    "textual>=7.3.0",
+    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -13,6 +15,8 @@ dev = [
     "pytest>=8.3.0",
     "pytest-cov>=6.0.0",
     "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.24.0",
+    "textual-dev>=1.6.1",
     "ruff>=0.9.0",
 ]
 

@@ -1,0 +1,87 @@
+# PlexiGlass Server Configuration
+# Copy this file to config/servers.yaml and customize with your Plex servers
+
+# List of Plex Media Servers to manage
+servers:
+  
+  # Example: Home Production Server
+  - name: "Home Server"
+    description: "Main home Plex server"
+    url: "http://192.168.1.100:32400"
+    token: "${PLEX_TOKEN_HOME}"  # Reference to environment variable
+    default: true                # This server selected by default
+    read_only: false             # Allow write operations (use with caution!)
+    tags: ["production", "home"]
+    
+  # Example: Test/Development Server
+  - name: "Test Server"
+    description: "Development and testing server"
+    url: "http://localhost:32400"
+    token: "${PLEX_TOKEN_TEST}"
+    default: false
+    read_only: false             # Safe for testing write operations
+    tags: ["development", "testing"]
+    
+  # Example: Shared Server (Read-Only)
+  - name: "Friend's Server"
+    description: "Shared server - view only"
+    url: "https://plex.friend.com:32400"
+    token: "${PLEX_TOKEN_FRIEND}"
+    default: false
+    read_only: true              # Prevent accidental writes to shared server
+    tags: ["shared", "remote"]
+    
+  # Example: Remote Server via Plex.tv
+  - name: "Remote Server"
+    description: "Remote server accessed via Plex.tv"
+    url: "https://remote.example.com:32400"
+    token: "${PLEX_TOKEN_REMOTE}"
+    default: false
+    read_only: false
+    ssl_verify: true             # Verify SSL certificate
+    tags: ["remote", "production"]
+
+# Application Settings
+settings:
+  
+  # UI Settings
+  ui:
+    theme: "dark"                # dark, light, or custom theme name
+    refresh_interval: 5          # Dashboard refresh interval (seconds)
+    animations: true             # Enable UI animations
+    
+  # Gallery Mode Settings
+  gallery:
+    show_code_examples: true     # Display code examples in demos
+    enable_write_operations: true  # Allow testing write operations
+    confirm_before_write: true   # Require confirmation before writes
+    max_results: 50              # Maximum results to display
+    
+  # Performance Settings
+  performance:
+    cache_ttl: 60                # Cache time-to-live (seconds)
+    max_undo_stack: 50           # Maximum undo operations to remember
+    connection_timeout: 30       # API connection timeout (seconds)
+    max_concurrent_requests: 5   # Max parallel API requests
+    
+  # Logging Settings  
+  logging:
+    level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+    file: "plexiglass.log"       # Log file path
+    max_size_mb: 10              # Max log file size
+    backup_count: 3              # Number of log backups to keep
+
+# Environment Variables Required:
+# 
+# Set these in your shell profile or .env file:
+#   export PLEX_TOKEN_HOME="your-home-server-token"
+#   export PLEX_TOKEN_TEST="your-test-server-token"
+#   export PLEX_TOKEN_FRIEND="your-friend-server-token"
+#   export PLEX_TOKEN_REMOTE="your-remote-server-token"
+#
+# To get your Plex token:
+#   1. Sign in to Plex Web App
+#   2. Open browser dev tools (F12)
+#   3. Go to any media item
+#   4. Look in Network tab for X-Plex-Token in request headers
+#   OR visit: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
