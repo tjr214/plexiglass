@@ -308,6 +308,9 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Gallery demo system designed
 - [x] Testing strategy defined
 - [x] Documentation structure created
+- [x] CLI entry point configured
+- [x] System-wide installation supported (uv tool install)
+- [x] Placeholder TUI app created and tested
 
 ### 🔄 Phase 3: Core Implementation (NEXT)
 
@@ -405,6 +408,32 @@ undo_service.undo()  # Restores "Old Title"
 
 ## 🚀 Quick Start (When Ready)
 
+### Installation
+
+#### Option 1: Install as System-Wide Tool (Recommended)
+
+```bash
+# Install PlexiGlass globally with uv
+uv tool install plexiglass
+
+# Or install from local directory
+cd /path/to/plexiglass
+uv tool install .
+
+# Configure servers
+mkdir -p ~/.config/plexiglass
+cp config/servers.example.yaml ~/.config/plexiglass/servers.yaml
+# Edit ~/.config/plexiglass/servers.yaml
+
+# Set environment variables
+export PLEX_TOKEN_HOME="your-plex-token"
+
+# Run from anywhere!
+plexiglass
+```
+
+#### Option 2: Development Setup
+
 ```bash
 # Clone and setup
 git clone <repo>
@@ -420,6 +449,17 @@ uv run pytest
 
 # Launch PlexiGlass
 uv run python -m plexiglass
+# OR
+uv run plexiglass
+```
+
+### CLI Commands
+
+```bash
+plexiglass              # Launch TUI
+plexiglass --version    # Show version
+plexiglass --help       # Show help
+plexiglass --check-config  # Verify configuration
 ```
 
 ---

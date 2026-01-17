@@ -70,6 +70,30 @@ A complete, interactive demonstration platform for **every python-plexapi featur
 
 ### Installation
 
+#### Option 1: Install as System-Wide Tool (Recommended)
+
+```bash
+# Install PlexiGlass globally with uv
+uv tool install plexiglass
+
+# Or install from local directory
+cd /path/to/plexiglass
+uv tool install .
+
+# Configure servers
+mkdir -p ~/.config/plexiglass
+cp config/servers.example.yaml ~/.config/plexiglass/servers.yaml
+# Edit ~/.config/plexiglass/servers.yaml with your Plex server details
+
+# Set environment variables for tokens
+export PLEX_TOKEN_HOME="your-plex-token-here"
+
+# Run PlexiGlass from anywhere!
+plexiglass
+```
+
+#### Option 2: Development Setup
+
 ```bash
 # Clone repository
 git clone <repo-url>
@@ -92,13 +116,20 @@ uv run pytest
 ### Running PlexiGlass
 
 ```bash
-# Standard launch
-uv run python -m plexiglass
+# If installed globally with uv tool:
+plexiglass                # Launch the TUI
+plexiglass --version      # Show version
+plexiglass --help         # Show help
+plexiglass --check-config # Verify configuration
 
-# Development mode with live reload
+# If running in development:
+uv run python -m plexiglass            # Standard launch
+uv run plexiglass                      # Using CLI entry point
+
+# Development mode with live reload:
 uv run textual run --dev src/plexiglass/app/plexiglass_app.py
 
-# With debug console
+# With debug console:
 uv run textual console
 ```
 
