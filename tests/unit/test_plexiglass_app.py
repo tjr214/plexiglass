@@ -516,6 +516,7 @@ class TestMainScreen:
             # Assert
             suggestions = screen.query_one("#command-suggestions")
             assert "refresh" in str(suggestions.render())
+            assert "Refresh dashboard data" in str(suggestions.render())
 
     @pytest.mark.asyncio
     async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:

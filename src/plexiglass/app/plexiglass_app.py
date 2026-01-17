@@ -226,8 +226,24 @@ class CommandPromptScreen(Screen):
         matches = [command for command in self.commands if command.lower().startswith(normalized)]
         if not normalized:
             matches = self.commands
-        suggestions = "\n".join(matches) if matches else "No suggestions"
+        if not matches:
+            suggestions = "No suggestions"
+        else:
+            suggestions = "\n".join(self._format_command_help(command) for command in matches)
         self.query_one("#command-suggestions", Static).update(suggestions)
+
+    def _format_command_help(self, command: str) -> str:
+        return f"{command} - {self._command_help().get(command, 'Run command')}"
+
+    @staticmethod
+    def _command_help() -> dict[str, str]:
+        return {
+            "refresh": "Refresh dashboard data",
+            "connect_default": "Connect to default server",
+            "open_gallery": "Open gallery screen",
+            "open_command_prompt": "Show command prompt modal",
+            "quit": "Exit the application",
+        }
 
     class CommandSubmitted(Message):
         """Message fired when a command is submitted."""
