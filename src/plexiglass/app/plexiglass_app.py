@@ -106,8 +106,7 @@ class QuickActionsMenu(Static):
 
     def update_actions(self, actions: list[dict[str, str]]) -> None:
         self.actions = actions
-        self.remove_children()
-        self.refresh()
+        # Actions are static; avoid remount to prevent duplicate IDs.
 
     def trigger_action(self, action_key: str) -> None:
         self.post_message(self.ActionTriggered(action_key))
@@ -965,8 +964,8 @@ class PlexiGlassApp(App):
     def action_edit_config(self) -> None:
         """Open config builder for editing existing config."""
         setup_screen = self._build_config_setup_screen()
-        setup_screen.load_from_config()
         self.push_screen(setup_screen)
+        self.call_later(setup_screen.load_from_config)
 
     def _handle_command_prompt_command(self, command: str) -> None:
         screen = self.get_screen("main")
