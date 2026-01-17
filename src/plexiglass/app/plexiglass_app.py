@@ -14,11 +14,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import yaml
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical
 from textual.message import Message
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Input, Static
+from plexapi.server import PlexServer
+from textual.widgets import Button, Checkbox, Footer, Header, Input, Static
 
 from plexiglass.config.loader import ConfigLoader
 from plexiglass.services.server_manager import ServerManager
@@ -642,6 +644,160 @@ class MainScreen(Screen):
         return timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
 
+class ConfigSetupPromptScreen(Screen):
+    """Blocking prompt shown when configuration is missing or invalid."""
+
+    def __init__(self, config_path: Path, error_message: str | None = None, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.config_path = config_path
+        self.error_message = error_message
+
+    def compose(self) -> ComposeResult:
+        with Container(classes="config-prompt"):
+            yield Static("Configuration Required", classes="modal-title")
+            yield Static(
+                "No valid server configuration was found. PlexiGlass needs a server config to run.",
+                classes="modal-body",
+            )
+            if self.error_message:
+                yield Static(f"Error: {self.error_message}", classes="modal-error")
+            yield Static(f"Target file: {self.config_path}", classes="modal-body")
+            with Horizontal(classes="modal-actions"):
+                yield Button("Create Config", id="create-config")
+                yield Button("Quit", id="quit")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "create-config":
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.push_screen(app._build_config_setup_screen())
+        elif event.button.id == "quit":
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.exit()
+
+
+class ConfigSetupScreen(Screen):
+    """Multi-server configuration builder screen."""
+
+    def __init__(self, config_path: Path, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.config_path = config_path
+        self.server_entries: list[dict[str, Any]] = []
+        self.error_message: str | None = None
+
+    def compose(self) -> ComposeResult:
+        with Container(classes="config-builder"):
+            yield Static("Server Configuration", classes="modal-title")
+            yield Static(
+                "Add one or more Plex servers. Tokens can be found in Plex Web by viewing XML for a media item and copying X-Plex-Token from the URL.",
+                classes="modal-body",
+            )
+            yield Static("Server List:", classes="modal-section")
+            yield Static("", id="server-list")
+            with Container(classes="form-row"):
+                yield Input(placeholder="Server URL (http://host:32400)", id="server-url")
+                yield Input(placeholder="Token", id="server-token")
+            with Container(classes="form-row"):
+                yield Input(placeholder="Description (optional)", id="server-description")
+                yield Checkbox(label="Default server", id="server-default")
+            yield Static(
+                "Token help: Sign in to Plex Web, open any media item XML, copy X-Plex-Token from the URL.",
+                classes="modal-body",
+            )
+            yield Static("", id="setup-error", classes="modal-error")
+            with Horizontal(classes="modal-actions"):
+                yield Button("Validate & Add", id="add-server")
+                yield Button("Save Config", id="save-config")
+                yield Button("Cancel", id="cancel-config")
+
+    def add_server(self, server: dict[str, Any]) -> None:
+        if server.get("default"):
+            for entry in self.server_entries:
+                entry["default"] = False
+        self.server_entries.append(server)
+        self._render_server_list()
+
+    def save_config(self) -> None:
+        settings = ConfigLoader._get_default_settings()
+        payload = {
+            "servers": self.server_entries,
+            "settings": settings,
+        }
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        self.config_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+    def _render_server_list(self) -> None:
+        lines = []
+        for server in self.server_entries:
+            default = " (default)" if server.get("default") else ""
+            lines.append(f"- {server.get('name', 'Unknown')}{default}")
+        self.query_one("#server-list", Static).update("\n".join(lines))
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "add-server":
+            self._handle_add_server()
+        elif event.button.id == "save-config":
+            self._handle_save()
+        elif event.button.id == "cancel-config":
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.exit()
+
+    def _handle_add_server(self) -> None:
+        self.error_message = None
+        url = self.query_one("#server-url", Input).value.strip()
+        token = self.query_one("#server-token", Input).value.strip()
+        description = self.query_one("#server-description", Input).value.strip()
+        default_value = self.query_one("#server-default", Checkbox).value
+
+        if not url or not token:
+            self._set_error("URL and token are required.")
+            return
+
+        try:
+            server_name = self._validate_server(url, token)
+        except Exception as exc:  # noqa: BLE001
+            self._set_error(str(exc))
+            return
+
+        self.add_server(
+            {
+                "name": server_name,
+                "description": description or "",
+                "url": url,
+                "token": token,
+                "default": default_value,
+                "read_only": False,
+                "ssl_verify": True,
+                "tags": [],
+            }
+        )
+        self.query_one("#server-url", Input).value = ""
+        self.query_one("#server-token", Input).value = ""
+        self.query_one("#server-description", Input).value = ""
+        self.query_one("#server-default", Checkbox).value = False
+
+    def _handle_save(self) -> None:
+        if not self.server_entries:
+            self._set_error("Add at least one server before saving.")
+            return
+        self.save_config()
+        app = self.app
+        if isinstance(app, PlexiGlassApp):
+            app._load_configuration()
+            app.switch_screen("main")
+
+    def _set_error(self, message: str) -> None:
+        self.error_message = message
+        self.query_one("#setup-error", Static).update(message)
+
+    @staticmethod
+    def _validate_server(url: str, token: str) -> str:
+        server = PlexServer(baseurl=url, token=token)
+        return server.friendlyName
+
+
 class GalleryScreen(Screen):
     """Gallery screen for python-plexapi feature categories."""
 
@@ -700,7 +856,7 @@ class PlexiGlassApp(App):
 
     def __init__(self, config_path: Path | None = None, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.config_path = config_path or Path("config/servers.yaml")
+        self.config_path = config_path or (Path.home() / ".config" / "plexiglass" / "servers.yaml")
         self.config_loader: ConfigLoader | None = None
         self.server_manager: ServerManager | None = None
         self.error_message: str | None = None
@@ -708,7 +864,12 @@ class PlexiGlassApp(App):
     def on_mount(self) -> None:
         """Initialize services and screens when app mounts."""
         self._load_configuration()
-        self.push_screen("main")
+        if self.config_loader is None:
+            self.push_screen(
+                ConfigSetupPromptScreen(self.config_path, error_message=self.error_message)
+            )
+        else:
+            self.push_screen("main")
 
     def _load_configuration(self) -> None:
         """Load configuration and initialize the server manager."""
@@ -744,6 +905,9 @@ class PlexiGlassApp(App):
         screen = self.get_screen("main")
         if isinstance(screen, MainScreen):
             screen._handle_command(command)
+
+    def _build_config_setup_screen(self) -> ConfigSetupScreen:
+        return ConfigSetupScreen(self.config_path)
 
     def action_help(self) -> None:
         """Placeholder help action (Textual will handle help overlay)."""

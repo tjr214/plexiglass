@@ -333,6 +333,8 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Command prompt modal (input, history, output, ESC dismiss, ':' shortcut)
 - [x] Command prompt suggestions (grouped, help text, pagination)
 - [x] Command prompt commands: refresh/connect/gallery/list_servers/list_libraries/quit
+- [x] Config setup flow (blocking prompt + multi-server builder)
+- [x] Config defaults (user-local path, full settings write, validation)
 - [x] Dashboard CSS layout and theming
 
 #### Sprint 3: Gallery Foundation

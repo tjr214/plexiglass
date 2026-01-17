@@ -101,6 +101,44 @@ Header, Footer {
     margin-bottom: 1;
 }
 
+.config-prompt {
+    background: $bg-panel;
+    border: tall $accent-amber;
+    padding: 2 3;
+    width: 60%;
+    height: 40%;
+    align: center middle;
+}
+
+.config-builder {
+    background: $bg-panel;
+    border: tall $accent-cyan;
+    padding: 2 3;
+    width: 70%;
+    height: 70%;
+    align: center middle;
+}
+
+.modal-actions {
+    margin-top: 1;
+    align: center middle;
+}
+
+.modal-error {
+    color: $accent-red;
+    margin-top: 1;
+}
+
+.form-row {
+    layout: horizontal;
+}
+
+#server-list {
+    height: 6;
+    border: tall $bg-accent;
+    padding: 1 1;
+}
+
 .modal-section {
     text-style: bold;
     color: $accent-amber;

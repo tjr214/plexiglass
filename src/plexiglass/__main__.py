@@ -71,7 +71,6 @@ def check_environment() -> bool:
     # Check for required config files
     config_paths = [
         Path.home() / ".config" / "plexiglass" / "servers.yaml",
-        Path.cwd() / "config" / "servers.yaml",
     ]
 
     config_exists = any(path.exists() for path in config_paths)
@@ -81,7 +80,7 @@ def check_environment() -> bool:
         print("\nExpected configuration at one of:", file=sys.stderr)
         for path in config_paths:
             print(f"  - {path}", file=sys.stderr)
-        print("\nCopy config/servers.example.yaml to one of these locations.", file=sys.stderr)
+        print("\nCreate a config at the user location above.", file=sys.stderr)
         return False
 
     return True

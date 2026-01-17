@@ -131,7 +131,7 @@ class TestPlexiGlassApp:
         RED TEST: Should handle missing config file gracefully.
 
         Expected behavior:
-        - Show error message if config not found
+        - Show setup prompt if config not found
         - Don't crash the app
         """
         # Arrange
@@ -144,8 +144,8 @@ class TestPlexiGlassApp:
         async with app.run_test() as pilot:
             await pilot.pause()
 
-        # Assert - should not crash
-        assert app is not None
+            # Assert - should show setup prompt
+            assert app.screen.__class__.__name__ == "ConfigSetupPromptScreen"
 
     @pytest.mark.asyncio
     async def test_app_can_switch_to_gallery_screen(self, sample_config_path: Path) -> None:
@@ -214,6 +214,28 @@ class TestPlexiGlassApp:
 
             # Assert
             assert app.screen.__class__.__name__ == "CommandPromptScreen"
+
+    @pytest.mark.asyncio
+    async def test_config_prompt_screen_shows_on_invalid_config(self, tmp_path: Path) -> None:
+        """
+        RED TEST: Should show config prompt when config is invalid.
+
+        Expected behavior:
+        - Invalid YAML leads to config setup prompt
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        bad_config = tmp_path / "servers.yaml"
+        bad_config.write_text("servers: [", encoding="utf-8")
+        app = PlexiGlassApp(config_path=bad_config)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            assert app.screen.__class__.__name__ == "ConfigSetupPromptScreen"
 
 
 class TestMainScreen:
@@ -548,6 +570,86 @@ class TestMainScreen:
             # Assert
             output = screen.query_one("#command-output")
             assert "Home Server" in str(output.render())
+
+    @pytest.mark.asyncio
+    async def test_config_setup_screen_adds_server(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Config setup screen should add a server entry.
+
+        Expected behavior:
+        - Add server and see it in the list
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+        config_path = sample_config_path
+        setup_builder = getattr(app, "_build_config_setup_screen")
+        setup = setup_builder()
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.push_screen(setup)
+            await pilot.pause()
+            setup = app.screen
+            add_server = getattr(setup, "add_server")
+            add_server(
+                {
+                    "name": "Home Server",
+                    "description": "Primary",
+                    "url": "http://localhost:32400",
+                    "token": "token",
+                    "default": True,
+                }
+            )
+            save_config = getattr(setup, "save_config")
+            save_config()
+            await pilot.pause()
+
+            # Assert
+            assert config_path.exists()
+            assert config_path.read_text(encoding="utf-8")
+
+    @pytest.mark.asyncio
+    async def test_config_setup_screen_saves_config(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Config setup screen should save config.
+
+        Expected behavior:
+        - Save config writes file to disk
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+        config_path = sample_config_path
+        setup_builder = getattr(app, "_build_config_setup_screen")
+        setup = setup_builder()
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.push_screen(setup)
+            await pilot.pause()
+            setup = app.screen
+            add_server = getattr(setup, "add_server")
+            add_server(
+                {
+                    "name": "Home Server",
+                    "description": "Primary",
+                    "url": "http://localhost:32400",
+                    "token": "token",
+                    "default": True,
+                }
+            )
+            save_config = getattr(setup, "save_config")
+            save_config()
+            await pilot.pause()
+
+            # Assert
+            assert config_path.exists()
+            assert config_path.read_text(encoding="utf-8")
 
     @pytest.mark.asyncio
     async def test_command_prompt_list_servers_filtered(self, sample_config_path: Path) -> None:
