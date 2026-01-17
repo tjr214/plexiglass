@@ -2,8 +2,8 @@
 
 **Project**: PlexiGlass  
 **Version**: 0.1.0  
-**Last Updated**: 2026-01-16  
-**Status**: Planning & Architecture Complete ✅
+**Last Updated**: 2026-01-17  
+**Status**: Sprint 1 Foundation Complete ✅
 
 ---
 
@@ -312,15 +312,15 @@ undo_service.undo()  # Restores "Old Title"
 - [x] System-wide installation supported (uv tool install)
 - [x] Placeholder TUI app created and tested
 
-### 🔄 Phase 3: Core Implementation (NEXT)
+### 🔄 Phase 3: Core Implementation (IN PROGRESS)
 
-#### Sprint 1: Foundation
-- [ ] Server configuration system
-- [ ] Server manager service
-- [ ] Basic Textual app structure
-- [ ] Main screen layout
-- [ ] Server card widget
-- [ ] Configuration loader
+#### Sprint 1: Foundation (COMPLETE)
+- [x] Server configuration system
+- [x] Server manager service
+- [x] Basic Textual app structure
+- [x] Main screen layout
+- [x] Server card widget
+- [x] Configuration loader
 
 #### Sprint 2: Dashboard Mode
 - [ ] Server status dashboard

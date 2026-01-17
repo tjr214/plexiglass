@@ -10,7 +10,7 @@ This module provides multi-server connection management including:
 
 from typing import Any
 
-from plexapi.exceptions import BadRequest, Unauthorized
+from plexapi.exceptions import Unauthorized
 from plexapi.server import PlexServer
 
 from plexiglass.config.loader import ConfigLoader
@@ -221,4 +221,4 @@ class ServerManager:
         if not server_config:
             raise ServerNotFoundError(f"Server '{name}' not found in configuration")
 
-        return server_config.get("read_only", False)
+        return bool(server_config.get("read_only", False))

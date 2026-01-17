@@ -17,7 +17,6 @@ from textual.app import App, ComposeResult
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
-
 from plexiglass.config.loader import ConfigLoader
 from plexiglass.services.server_manager import ServerManager
 
