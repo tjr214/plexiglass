@@ -496,6 +496,7 @@ class TestMainScreen:
 
         Expected behavior:
         - Typing text updates suggestion list
+        - Suggestions include grouped headers
         """
         # Arrange
         from plexiglass.app.plexiglass_app import PlexiGlassApp
@@ -515,8 +516,38 @@ class TestMainScreen:
 
             # Assert
             suggestions = screen.query_one("#command-suggestions")
-            assert "refresh" in str(suggestions.render())
-            assert "Refresh dashboard data" in str(suggestions.render())
+            render_text = str(suggestions.render())
+            assert "refresh" in render_text
+            assert "Refresh dashboard data" in render_text
+            assert "Core" in render_text
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_list_servers(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should list servers.
+
+        Expected behavior:
+        - Running list_servers outputs server names
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("list_servers")
+            await pilot.pause()
+
+            # Assert
+            output = screen.query_one("#command-output")
+            assert "Home Server" in str(output.render())
 
     @pytest.mark.asyncio
     async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:

@@ -229,20 +229,56 @@ class CommandPromptScreen(Screen):
         if not matches:
             suggestions = "No suggestions"
         else:
-            suggestions = "\n".join(self._format_command_help(command) for command in matches)
+            suggestions = self._format_grouped_suggestions(matches)
         self.query_one("#command-suggestions", Static).update(suggestions)
 
+    def _format_grouped_suggestions(self, commands: list[str]) -> str:
+        grouped: dict[str, list[str]] = {}
+        help_map = self._command_help()
+        for command in commands:
+            group = help_map.get(command, {}).get("group", "Other")
+            grouped.setdefault(group, []).append(command)
+
+        lines: list[str] = []
+        for group in sorted(grouped.keys()):
+            lines.append(f"{group}")
+            for command in sorted(grouped[group]):
+                lines.append(f"  {self._format_command_help(command)}")
+
+        return "\n".join(lines)
+
     def _format_command_help(self, command: str) -> str:
-        return f"{command} - {self._command_help().get(command, 'Run command')}"
+        command_help = self._command_help().get(command, {})
+        description = command_help.get("description", "Run command")
+        return f"{command} - {description}"
 
     @staticmethod
-    def _command_help() -> dict[str, str]:
+    def _command_help() -> dict[str, dict[str, str]]:
         return {
-            "refresh": "Refresh dashboard data",
-            "connect_default": "Connect to default server",
-            "open_gallery": "Open gallery screen",
-            "open_command_prompt": "Show command prompt modal",
-            "quit": "Exit the application",
+            "refresh": {
+                "description": "Refresh dashboard data",
+                "group": "Core",
+            },
+            "connect_default": {
+                "description": "Connect to default server",
+                "group": "Core",
+            },
+            "open_gallery": {
+                "description": "Open gallery screen",
+                "group": "Navigation",
+            },
+            "open_command_prompt": {
+                "description": "Show command prompt modal",
+                "group": "Navigation",
+            },
+            "list_servers": {
+                "description": "List configured servers",
+                "group": "Info",
+            },
+            "quit": {
+                "description": "Exit the application",
+                "group": "System",
+            },
         }
 
     class CommandSubmitted(Message):
@@ -426,6 +462,19 @@ class MainScreen(Screen):
             self._set_command_output("Quick actions are available on the dashboard")
             return
 
+        if normalized in {"list_servers", "servers"}:
+            app = self.app
+            if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+                names = app.server_manager.get_all_server_names()
+                if names:
+                    output = "Servers:\n" + "\n".join(f"- {name}" for name in names)
+                else:
+                    output = "No servers configured"
+                self._set_command_output(output)
+            else:
+                self._set_command_output("No server manager available")
+            return
+
         if normalized in {"quit", "exit"}:
             app = self.app
             if isinstance(app, PlexiGlassApp):
@@ -520,6 +569,7 @@ class MainScreen(Screen):
             "connect_default",
             "open_gallery",
             "open_command_prompt",
+            "list_servers",
             "quit",
         ]
 
