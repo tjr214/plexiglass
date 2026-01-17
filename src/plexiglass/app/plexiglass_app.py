@@ -697,9 +697,11 @@ class ConfigSetupScreen(Screen):
             yield Static("", id="server-list")
             with Container(classes="form-row"):
                 yield Input(placeholder="Server URL (http://host:32400)", id="server-url")
+            with Container(classes="form-row"):
                 yield Input(placeholder="Token", id="server-token")
             with Container(classes="form-row"):
                 yield Input(placeholder="Description (optional)", id="server-description")
+            with Container(classes="form-row"):
                 yield Checkbox(label="Default server", id="server-default")
             yield Static(
                 "Token help: Sign in to Plex Web, open any media item XML, copy X-Plex-Token from the URL.",

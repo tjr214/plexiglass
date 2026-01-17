@@ -130,7 +130,8 @@ Header, Footer {
 }
 
 .form-row {
-    layout: horizontal;
+    layout: vertical;
+    margin-top: 1;
 }
 
 #server-list {
