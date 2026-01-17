@@ -94,25 +94,28 @@ class SessionDetailsPanel(Static):
 class QuickActionsMenu(Static):
     """Quick actions menu for dashboard shortcuts."""
 
-    def __init__(self, actions: list[str], **kwargs: Any) -> None:
+    def __init__(self, actions: list[dict[str, str]], **kwargs: Any) -> None:
         super().__init__("", **kwargs)
         self.actions = actions
         self.add_class("quick-actions")
 
-    def on_mount(self) -> None:
-        self.update(self._render_actions())
+    def compose(self) -> ComposeResult:
+        yield Static("Quick Actions", classes="section-title")
+        for action in self.actions:
+            yield Button(action["label"], id=f"action-{action['key']}")
 
-    def update_actions(self, actions: list[str]) -> None:
+    def update_actions(self, actions: list[dict[str, str]]) -> None:
         self.actions = actions
-        self.update(self._render_actions())
+        self.remove_children()
+        self.refresh()
 
     def trigger_action(self, action_key: str) -> None:
         self.post_message(self.ActionTriggered(action_key))
 
-    def _render_actions(self) -> str:
-        if not self.actions:
-            return "Quick Actions\nNone"
-        return "Quick Actions\n" + "\n".join(f"- {action}" for action in self.actions)
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id and event.button.id.startswith("action-"):
+            action_key = event.button.id.replace("action-", "")
+            self.trigger_action(action_key)
 
     class ActionTriggered(Message):
         """Message fired when a quick action is triggered."""
@@ -127,7 +130,7 @@ class QuickActionsMenu(Static):
 class CommandPromptPanel(Static):
     """Popup command prompt panel for dashboard actions."""
 
-    def __init__(self, commands: list[str], **kwargs: Any) -> None:
+    def __init__(self, commands: list[dict[str, str]], **kwargs: Any) -> None:
         super().__init__("", **kwargs)
         self.commands = commands
         self.last_output: str | None = None
@@ -136,7 +139,7 @@ class CommandPromptPanel(Static):
     def on_mount(self) -> None:
         self.update(self._render_prompt())
 
-    def update_commands(self, commands: list[str]) -> None:
+    def update_commands(self, commands: list[dict[str, str]]) -> None:
         self.commands = commands
         self.update(self._render_prompt())
 
@@ -151,7 +154,7 @@ class CommandPromptPanel(Static):
         lines = ["Command Prompt"]
         if self.commands:
             lines.append("Commands:")
-            lines.extend(f"- {command}" for command in self.commands)
+            lines.extend(f"- {command['key']}" for command in self.commands)
         if self.last_output:
             lines.append("Output:")
             lines.append(self.last_output)
@@ -170,19 +173,21 @@ class CommandPromptPanel(Static):
 class CommandPromptScreen(Screen):
     """Modal command prompt screen."""
 
-    def __init__(self, commands: list[str], **kwargs: Any) -> None:
+    def __init__(self, commands: list[dict[str, str]], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.commands = commands
         self.history: list[str] = []
         self.last_output: str | None = None
+        self.command_keys = [command["key"] for command in commands]
 
     def compose(self) -> ComposeResult:
         with Container(classes="command-modal"):
             yield Static("Command Prompt", classes="modal-title")
             if self.commands:
                 yield Static("Commands:", classes="modal-section")
-                for command in self.commands:
-                    yield Static(f"- {command}")
+                with Vertical(id="command-list"):
+                    for command in self.commands:
+                        yield Button(command["label"], id=f"cmd-{command['key']}")
             yield Static("History:", classes="modal-section")
             yield Static("", id="history")
             yield Static("Suggestions:", classes="modal-section")
@@ -223,11 +228,18 @@ class CommandPromptScreen(Screen):
     def on_input_changed(self, event: Input.Changed) -> None:
         self._update_suggestions(event.value)
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id and event.button.id.startswith("cmd-"):
+            command_key = event.button.id.replace("cmd-", "")
+            self.submit_command(command_key)
+
     def _update_suggestions(self, text: str) -> None:
         normalized = text.strip().lower()
-        matches = [command for command in self.commands if command.lower().startswith(normalized)]
+        matches = [
+            command for command in self.command_keys if command.lower().startswith(normalized)
+        ]
         if not normalized:
-            matches = self.commands
+            matches = self.command_keys
         if not matches:
             suggestions = "No suggestions"
         else:
@@ -292,6 +304,14 @@ class CommandPromptScreen(Screen):
             "list_libraries": {
                 "description": "List libraries across servers",
                 "group": "Info",
+            },
+            "disconnect": {
+                "description": "Disconnect from all servers",
+                "group": "Core",
+            },
+            "edit_config": {
+                "description": "Edit server configuration",
+                "group": "Navigation",
             },
             "quit": {
                 "description": "Exit the application",
@@ -447,7 +467,7 @@ class MainScreen(Screen):
         self._handle_command(message.command)
 
     def _handle_command(self, command: str) -> None:
-        normalized = command.strip().lower()
+        normalized = self._resolve_command(command)
         main_screen = None
         if isinstance(self.app, PlexiGlassApp):
             main_screen = self.app.get_screen("main")
@@ -468,6 +488,15 @@ class MainScreen(Screen):
             else:
                 self._set_command_output("No server manager available")
             return
+        if normalized in {"disconnect", "disconnect_all", "disconnect all"}:
+            app = self.app
+            if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+                for name in app.server_manager.get_connected_servers():
+                    app.server_manager.disconnect_server(name)
+                self._set_command_output("Disconnected from all servers")
+            else:
+                self._set_command_output("No server manager available")
+            return
         if normalized in {"gallery", "open gallery", "open_gallery"}:
             app = self.app
             if isinstance(app, PlexiGlassApp):
@@ -480,6 +509,11 @@ class MainScreen(Screen):
                 app.action_show_command_prompt()
                 if isinstance(app.screen, CommandPromptScreen):
                     app.screen.set_output("Opened command prompt")
+            return
+        if normalized in {"edit_config", "edit config", "config"}:
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.action_edit_config()
             return
         if normalized in {"quick actions", "open quick actions", "open_quick_actions"}:
             self._set_command_output("Quick actions are available on the dashboard")
@@ -603,22 +637,26 @@ class MainScreen(Screen):
 
         return sessions
 
-    def _build_quick_actions(self) -> list[str]:
+    def _build_quick_actions(self) -> list[dict[str, str]]:
         return [
-            "Refresh Dashboard",
-            "Connect Default Server",
-            "Open Gallery",
-            "Open Command Prompt",
+            {"key": "refresh", "label": "Refresh Dashboard"},
+            {"key": "connect_default", "label": "Connect Default Server"},
+            {"key": "open_gallery", "label": "Open Gallery"},
+            {"key": "open_command_prompt", "label": "Open Command Prompt"},
+            {"key": "edit_config", "label": "Edit Server Config"},
         ]
 
-    def _build_command_prompt_commands(self) -> list[str]:
+    def _build_command_prompt_commands(self) -> list[dict[str, str]]:
         return [
-            "refresh",
-            "connect_default",
-            "open_gallery",
-            "open_command_prompt",
-            "list_servers",
-            "quit",
+            {"key": "refresh", "label": "Refresh dashboard data"},
+            {"key": "connect_default", "label": "Connect to default server"},
+            {"key": "disconnect", "label": "Disconnect all servers"},
+            {"key": "open_gallery", "label": "Open gallery screen"},
+            {"key": "open_command_prompt", "label": "Show command prompt"},
+            {"key": "edit_config", "label": "Edit server config"},
+            {"key": "list_servers", "label": "List configured servers"},
+            {"key": "list_libraries", "label": "List libraries across servers"},
+            {"key": "quit", "label": "Exit application"},
         ]
 
     def _set_command_output(self, message: str) -> None:
@@ -628,6 +666,15 @@ class MainScreen(Screen):
                 return
         panel: CommandPromptPanel = self.query_one(CommandPromptPanel)
         panel.set_output(message)
+
+    def _resolve_command(self, command: str) -> str:
+        normalized = command.strip().lower()
+        matches = [
+            action["key"]
+            for action in self._build_command_prompt_commands()
+            if action["key"].startswith(normalized)
+        ]
+        return matches[0] if matches else normalized
 
     @staticmethod
     def _resolve_server_manager(
@@ -728,6 +775,20 @@ class ConfigSetupScreen(Screen):
         }
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         self.config_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+    def load_from_config(self) -> None:
+        if not self.config_path.exists():
+            return
+        try:
+            raw_config = yaml.safe_load(self.config_path.read_text(encoding="utf-8"))
+        except Exception:
+            return
+        if not isinstance(raw_config, dict):
+            return
+        servers = raw_config.get("servers", [])
+        if isinstance(servers, list):
+            self.server_entries = [server for server in servers if isinstance(server, dict)]
+            self._render_server_list()
 
     def _render_server_list(self) -> None:
         lines = []
@@ -895,13 +956,17 @@ class PlexiGlassApp(App):
 
     def action_show_command_prompt(self) -> None:
         """Open the command prompt modal screen."""
-        commands = [
-            "refresh",
-            "connect_default",
-            "open_gallery",
-            "quit",
-        ]
+        main_screen = self.get_screen("main")
+        commands: list[dict[str, str]] = []
+        if isinstance(main_screen, MainScreen):
+            commands = main_screen._build_command_prompt_commands()
         self.push_screen(CommandPromptScreen(commands))
+
+    def action_edit_config(self) -> None:
+        """Open config builder for editing existing config."""
+        setup_screen = self._build_config_setup_screen()
+        setup_screen.load_from_config()
+        self.push_screen(setup_screen)
 
     def _handle_command_prompt_command(self, command: str) -> None:
         screen = self.get_screen("main")

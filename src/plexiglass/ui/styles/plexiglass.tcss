@@ -57,6 +57,14 @@ Header, Footer {
     transition: background 300ms, color 300ms;
 }
 
+.quick-actions Button {
+    margin-top: 1;
+}
+
+#command-list Button {
+    margin-top: 1;
+}
+
 .session-panel {
     width: 72%;
     min-height: 8;

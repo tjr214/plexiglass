@@ -745,7 +745,16 @@ class TestMainScreen:
             await pilot.pause()
 
             screen = app.screen
-            setattr(screen, "commands", [f"cmd_{idx}" for idx in range(20)])
+            setattr(
+                screen,
+                "commands",
+                [{"key": f"cmd_{idx}", "label": f"Command {idx}"} for idx in range(20)],
+            )
+            setattr(
+                screen,
+                "command_keys",
+                [command["key"] for command in getattr(screen, "commands")],
+            )
             update_suggestions = getattr(screen, "_update_suggestions")
             update_suggestions("")
             await pilot.pause()
