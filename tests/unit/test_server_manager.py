@@ -14,7 +14,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from plexapi.exceptions import Unauthorized, BadRequest
+from plexapi.exceptions import Unauthorized
 from plexapi.server import PlexServer
 
 
@@ -318,6 +318,7 @@ class TestServerManager:
             mock_server = MagicMock()
             mock_server.version = "1.40.0.7775"
             mock_server.platform = "Linux"
+            mock_server.sessions.return_value = []
             mock_plex.return_value = mock_server
 
             manager.connect_to_default()
@@ -328,6 +329,50 @@ class TestServerManager:
         assert status["connected"] is True
         assert "version" in status
         assert "platform" in status
+        assert status["session_count"] == 0
+
+    def test_get_server_status_includes_now_playing(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should include now-playing sessions with progress.
+
+        Expected behavior:
+        - Include session_count
+        - Include now_playing entries with title, user, state, progress
+        """
+        # Arrange
+        from plexiglass.config.loader import ConfigLoader
+        from plexiglass.services.server_manager import ServerManager
+
+        loader = ConfigLoader(sample_config_path)
+        loader.load()
+        manager = ServerManager(loader)
+
+        session = MagicMock()
+        session.title = "The Matrix"
+        session.usernames = ["neo"]
+        session.user = None
+        session.players = []
+        session.state = "playing"
+        session.viewOffset = 30_000
+        session.duration = 120_000
+
+        # Act
+        with patch("plexiglass.services.server_manager.PlexServer") as mock_plex:
+            mock_server = MagicMock()
+            mock_server.version = "1.40.0.7775"
+            mock_server.platform = "Linux"
+            mock_server.sessions.return_value = [session]
+            mock_plex.return_value = mock_server
+
+            manager.connect_to_default()
+            status = manager.get_server_status("Home Server")
+
+        # Assert
+        assert status["session_count"] == 1
+        assert status["now_playing"][0]["title"] == "The Matrix"
+        assert status["now_playing"][0]["user"] == "neo"
+        assert status["now_playing"][0]["state"] == "playing"
+        assert status["now_playing"][0]["progress_percent"] == 25
 
     def test_get_all_server_names(self, sample_config_path: Path) -> None:
         """

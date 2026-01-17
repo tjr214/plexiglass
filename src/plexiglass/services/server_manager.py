@@ -194,6 +194,8 @@ class ServerManager:
             "connected": name in self._connection_pool,
             "name": name,
             "url": server_config["url"],
+            "session_count": 0,
+            "now_playing": [],
         }
 
         if name in self._connection_pool:
@@ -202,7 +204,69 @@ class ServerManager:
             status["platform"] = server.platform
             status["friendly_name"] = server.friendlyName
 
+            sessions = self._safe_get_sessions(server)
+            status["session_count"] = len(sessions)
+            status["now_playing"] = [self._build_now_playing_entry(session) for session in sessions]
+
         return status
+
+    @staticmethod
+    def _safe_get_sessions(server: PlexServer) -> list[Any]:
+        try:
+            return list(server.sessions())
+        except Exception:
+            return []
+
+    @staticmethod
+    def _build_now_playing_entry(session: Any) -> dict[str, Any]:
+        title = (
+            getattr(session, "title", None)
+            or getattr(session, "grandparentTitle", None)
+            or "Unknown"
+        )
+        user = ServerManager._extract_session_user(session)
+        state = getattr(session, "state", None) or "unknown"
+        progress_percent = ServerManager._calculate_progress(session)
+
+        return {
+            "title": title,
+            "user": user,
+            "state": state,
+            "progress_percent": progress_percent,
+        }
+
+    @staticmethod
+    def _extract_session_user(session: Any) -> str:
+        usernames = getattr(session, "usernames", None)
+        if usernames:
+            return str(usernames[0])
+
+        user = getattr(session, "user", None)
+        if user is not None:
+            return str(getattr(user, "title", None) or getattr(user, "username", None) or user)
+
+        players = getattr(session, "players", None)
+        if players:
+            player = players[0]
+            return str(
+                getattr(player, "title", None) or getattr(player, "username", None) or player
+            )
+
+        return "Unknown"
+
+    @staticmethod
+    def _calculate_progress(session: Any) -> int | None:
+        view_offset = getattr(session, "viewOffset", None)
+        duration = getattr(session, "duration", None)
+        if view_offset is None or not duration:
+            return None
+
+        try:
+            progress = int((float(view_offset) / float(duration)) * 100)
+        except (TypeError, ValueError, ZeroDivisionError):
+            return None
+
+        return max(0, min(progress, 100))
 
     def is_server_read_only(self, name: str) -> bool:
         """

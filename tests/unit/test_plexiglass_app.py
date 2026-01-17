@@ -10,10 +10,8 @@ This module tests the Textual application including:
 """
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
-from textual.pilot import Pilot
 
 
 class TestPlexiGlassApp:
@@ -79,6 +77,7 @@ class TestPlexiGlassApp:
 
         # Assert
         assert app.TITLE == "PlexiGlass"
+        assert app.SUB_TITLE is not None
         assert "Dashboard" in app.SUB_TITLE
         assert "Gallery" in app.SUB_TITLE
 
@@ -216,9 +215,54 @@ class TestMainScreen:
         async with app.run_test() as pilot:
             await pilot.pause()
 
-            # Assert - should have widgets for servers
-            # This will be more specific once we implement ServerCard widget
-            assert len(list(app.query("ServerCard"))) >= 0
+        # Assert - should have widgets for servers
+        assert len(list(app.query("ServerStatusCard"))) >= 0
+
+    @pytest.mark.asyncio
+    async def test_main_screen_shows_dashboard_summary(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should display dashboard summary stats.
+
+        Expected behavior:
+        - Render summary widget above server cards
+        - Summary includes totals and session counts
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            summary = app.screen.query_one("DashboardSummary")
+            assert summary is not None
+
+    @pytest.mark.asyncio
+    async def test_main_screen_auto_refreshes(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should refresh dashboard status on interval.
+
+        Expected behavior:
+        - Use refresh interval from config settings
+        - Schedule periodic refresh
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            screen = app.screen
+            assert screen is not None
+            assert hasattr(screen, "refresh_handle")
+            assert getattr(screen, "refresh_handle") is not None
 
     @pytest.mark.asyncio
     async def test_main_screen_has_header(self, sample_config_path: Path) -> None:
