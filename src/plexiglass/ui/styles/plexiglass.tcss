@@ -13,6 +13,10 @@ Screen {
     color: $text-primary;
 }
 
+CommandPromptScreen {
+    background: rgba(13, 27, 30, 0.8);
+}
+
 Header, Footer {
     background: $bg-panel;
     color: $text-primary;
@@ -80,6 +84,39 @@ Header, Footer {
     padding: 1 2;
     color: $text-primary;
     transition: background 300ms, color 300ms;
+}
+
+.command-modal {
+    background: $bg-panel;
+    border: tall $accent-cyan;
+    padding: 2 3;
+    width: 60%;
+    height: 60%;
+    align: center middle;
+}
+
+.modal-title {
+    text-style: bold;
+    color: $accent-cyan;
+    margin-bottom: 1;
+}
+
+.modal-section {
+    text-style: bold;
+    color: $accent-amber;
+    margin-top: 1;
+}
+
+#command-input {
+    border: tall $bg-accent;
+    background: $bg-base;
+    color: $text-primary;
+    margin-top: 1;
+}
+
+#command-output {
+    margin-top: 1;
+    color: $text-muted;
 }
 
 .status-card {

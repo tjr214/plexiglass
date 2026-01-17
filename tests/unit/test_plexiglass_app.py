@@ -310,12 +310,12 @@ class TestMainScreen:
             assert menu is not None
 
     @pytest.mark.asyncio
-    async def test_main_screen_shows_command_prompt_panel(self, sample_config_path: Path) -> None:
+    async def test_app_can_open_command_prompt_screen(self, sample_config_path: Path) -> None:
         """
-        RED TEST: Should display command prompt panel.
+        RED TEST: Should display command prompt modal screen.
 
         Expected behavior:
-        - Render command prompt widget
+        - Opening command prompt switches to modal screen
         """
         # Arrange
         from plexiglass.app.plexiglass_app import PlexiGlassApp
@@ -325,10 +325,11 @@ class TestMainScreen:
         # Act
         async with app.run_test() as pilot:
             await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
 
             # Assert
-            panel = app.screen.query_one("CommandPromptPanel")
-            assert panel is not None
+            assert app.screen.__class__.__name__ == "CommandPromptScreen"
 
     @pytest.mark.asyncio
     async def test_command_prompt_triggers_connect(self, sample_config_path: Path) -> None:
@@ -347,9 +348,12 @@ class TestMainScreen:
         async with app.run_test() as pilot:
             await pilot.pause()
             app.server_manager = MagicMock()
-            panel = app.screen.query_one("CommandPromptPanel")
-            run_command = getattr(panel, "run_command")
-            run_command("connect_default")
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("connect_default")
             await pilot.pause()
 
             # Assert
@@ -373,14 +377,48 @@ class TestMainScreen:
         # Act
         async with app.run_test() as pilot:
             await pilot.pause()
-            panel = app.screen.query_one("CommandPromptPanel")
-            run_command = getattr(panel, "run_command")
-            run_command("refresh")
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("refresh")
             await pilot.pause()
 
             # Assert
-            assert hasattr(app.screen, "last_manual_refresh")
-            assert getattr(app.screen, "last_manual_refresh") is True
+            main_screen = app.get_screen("main")
+            assert hasattr(main_screen, "last_manual_refresh")
+            assert getattr(main_screen, "last_manual_refresh") is True
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_tracks_history(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should track command history.
+
+        Expected behavior:
+        - Submitted commands stored in history list
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("refresh")
+            submit_command("open_gallery")
+            await pilot.pause()
+
+            # Assert
+            history = getattr(screen, "history")
+            assert "refresh" in history
+            assert "open_gallery" in history
 
     @pytest.mark.asyncio
     async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:

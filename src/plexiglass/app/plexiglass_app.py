@@ -18,7 +18,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical
 from textual.message import Message
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Static
+from textual.widgets import Footer, Header, Input, Static
 
 from plexiglass.config.loader import ConfigLoader
 from plexiglass.services.server_manager import ServerManager
@@ -165,6 +165,62 @@ class CommandPromptPanel(Static):
             self.command = command
 
 
+class CommandPromptScreen(Screen):
+    """Modal command prompt screen."""
+
+    def __init__(self, commands: list[str], **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.commands = commands
+        self.history: list[str] = []
+        self.last_output: str | None = None
+
+    def compose(self) -> ComposeResult:
+        with Container(classes="command-modal"):
+            yield Static("Command Prompt", classes="modal-title")
+            if self.commands:
+                yield Static("Commands:", classes="modal-section")
+                for command in self.commands:
+                    yield Static(f"- {command}")
+            yield Static("History:", classes="modal-section")
+            yield Static("", id="history")
+            yield Input(placeholder="Type a command and press enter", id="command-input")
+            yield Static("", id="command-output")
+
+    def on_mount(self) -> None:
+        input_widget = self.query_one("#command-input", Input)
+        input_widget.focus()
+
+    def submit_command(self, command: str) -> None:
+        normalized = command.strip()
+        if not normalized:
+            return
+        self.history.append(normalized)
+        if len(self.history) > 10:
+            self.history = self.history[-10:]
+        self.query_one("#history", Static).update("\n".join(self.history))
+        self.post_message(self.CommandSubmitted(normalized))
+        if isinstance(self.app, PlexiGlassApp):
+            self.app.post_message(self.CommandSubmitted(normalized))
+            self.app.call_later(self.app._handle_command_prompt_command, normalized)
+
+    def set_output(self, output: str) -> None:
+        self.last_output = output
+        self.query_one("#command-output", Static).update(output)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        self.submit_command(event.value)
+        event.input.value = ""
+
+    class CommandSubmitted(Message):
+        """Message fired when a command is submitted."""
+
+        bubble = True
+
+        def __init__(self, command: str) -> None:
+            super().__init__()
+            self.command = command
+
+
 class ServerStatusCard(Static):
     """Server status widget for the dashboard."""
 
@@ -297,11 +353,18 @@ class MainScreen(Screen):
     ) -> None:
         self._handle_command(message.command)
 
+    def on_command_prompt_screen_command_submitted(
+        self, message: "CommandPromptScreen.CommandSubmitted"
+    ) -> None:
+        self._handle_command(message.command)
+
     def _handle_command(self, command: str) -> None:
         normalized = command.strip().lower()
+        main_screen = self.app.get_screen("main") if self.app is not None else None
         if normalized in {"refresh", "refresh dashboard"}:
-            self.last_manual_refresh = True
-            self._refresh_dashboard()
+            if isinstance(main_screen, MainScreen):
+                main_screen.last_manual_refresh = True
+                main_screen._refresh_dashboard()
             self._set_command_output("Dashboard refreshed")
             return
         if normalized in {"connect", "connect_default", "connect default"}:
@@ -317,6 +380,12 @@ class MainScreen(Screen):
             if isinstance(app, PlexiGlassApp):
                 app.action_show_gallery()
                 self._set_command_output("Opened gallery")
+            return
+
+        if normalized in {"quit", "exit"}:
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.exit()
             return
 
         self._set_command_output(f"Unknown command: {command}")
@@ -405,9 +474,14 @@ class MainScreen(Screen):
             "refresh",
             "connect_default",
             "open_gallery",
+            "quit",
         ]
 
     def _set_command_output(self, message: str) -> None:
+        if self.app is not None and self.app.screen is not None:
+            if isinstance(self.app.screen, CommandPromptScreen):
+                self.app.screen.set_output(message)
+                return
         panel: CommandPromptPanel = self.query_one(CommandPromptPanel)
         panel.set_output(message)
 
@@ -502,6 +576,21 @@ class PlexiGlassApp(App):
     def action_show_main(self) -> None:
         """Switch to the Main screen."""
         self.switch_screen("main")
+
+    def action_show_command_prompt(self) -> None:
+        """Open the command prompt modal screen."""
+        commands = [
+            "refresh",
+            "connect_default",
+            "open_gallery",
+            "quit",
+        ]
+        self.push_screen(CommandPromptScreen(commands))
+
+    def _handle_command_prompt_command(self, command: str) -> None:
+        screen = self.get_screen("main")
+        if isinstance(screen, MainScreen):
+            screen._handle_command(command)
 
     def action_help(self) -> None:
         """Placeholder help action (Textual will handle help overlay)."""
