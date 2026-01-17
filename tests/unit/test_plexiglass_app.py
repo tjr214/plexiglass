@@ -550,6 +550,110 @@ class TestMainScreen:
             assert "Home Server" in str(output.render())
 
     @pytest.mark.asyncio
+    async def test_command_prompt_list_servers_filtered(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should filter servers by status.
+
+        Expected behavior:
+        - list_servers connected only shows connected servers
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+        server_manager = MagicMock()
+        server_manager.get_all_server_names.return_value = ["Home Server", "Lab"]
+        server_manager.get_connected_servers.return_value = {"Home Server"}
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+            app.server_manager = server_manager
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("list_servers connected")
+            await pilot.pause()
+            await pilot.pause()
+
+            # Assert
+            output = screen.query_one("#command-output")
+            render_text = str(output.render())
+            assert "Home Server" in render_text
+            assert "Lab" not in render_text
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_list_libraries(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Command prompt should list libraries.
+
+        Expected behavior:
+        - Running list_libraries outputs library names
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+        server_manager = MagicMock()
+        server_manager.get_all_server_names.return_value = ["Home Server"]
+        server_manager.get_server_status.return_value = {
+            "library_names": ["Movies", "Series"],
+            "library_count": 2,
+            "library_items": 100,
+        }
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+            app.server_manager = server_manager
+
+            screen = app.screen
+            submit_command = getattr(screen, "submit_command")
+            submit_command("list_libraries")
+            await pilot.pause()
+            await pilot.pause()
+
+            # Assert
+            output = screen.query_one("#command-output")
+            render_text = str(output.render())
+            assert "Movies" in render_text
+            assert "Series" in render_text
+
+    @pytest.mark.asyncio
+    async def test_command_prompt_suggestion_paging(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Suggestion list should paginate/scroll.
+
+        Expected behavior:
+        - Typing filter shows only first page with indicator
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            app.action_show_command_prompt()
+            await pilot.pause()
+
+            screen = app.screen
+            setattr(screen, "commands", [f"cmd_{idx}" for idx in range(20)])
+            update_suggestions = getattr(screen, "_update_suggestions")
+            update_suggestions("")
+            await pilot.pause()
+
+            # Assert
+            suggestions = screen.query_one("#command-suggestions")
+            render_text = str(suggestions.render())
+            assert "Showing" in render_text
+
+    @pytest.mark.asyncio
     async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:
         """
         RED TEST: Quick actions should open gallery.

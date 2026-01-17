@@ -240,10 +240,22 @@ class CommandPromptScreen(Screen):
             grouped.setdefault(group, []).append(command)
 
         lines: list[str] = []
+        all_commands = sum(len(values) for values in grouped.values())
+        page_size = 10
+        visible = 0
         for group in sorted(grouped.keys()):
+            group_commands = sorted(grouped[group])
+            if visible >= page_size:
+                break
             lines.append(f"{group}")
-            for command in sorted(grouped[group]):
+            for command in group_commands:
+                if visible >= page_size:
+                    break
                 lines.append(f"  {self._format_command_help(command)}")
+                visible += 1
+
+        if all_commands > page_size:
+            lines.append(f"Showing {visible} of {all_commands} commands")
 
         return "\n".join(lines)
 
@@ -273,6 +285,10 @@ class CommandPromptScreen(Screen):
             },
             "list_servers": {
                 "description": "List configured servers",
+                "group": "Info",
+            },
+            "list_libraries": {
+                "description": "List libraries across servers",
                 "group": "Info",
             },
             "quit": {
@@ -430,7 +446,12 @@ class MainScreen(Screen):
 
     def _handle_command(self, command: str) -> None:
         normalized = command.strip().lower()
-        main_screen = self.app.get_screen("main") if self.app is not None else None
+        main_screen = None
+        if isinstance(self.app, PlexiGlassApp):
+            main_screen = self.app.get_screen("main")
+            if isinstance(main_screen, MainScreen) and isinstance(main_screen.app, PlexiGlassApp):
+                main_screen.app.server_manager = self.app.server_manager
+
         if normalized in {"refresh", "refresh dashboard"}:
             if isinstance(main_screen, MainScreen):
                 main_screen.last_manual_refresh = True
@@ -462,14 +483,39 @@ class MainScreen(Screen):
             self._set_command_output("Quick actions are available on the dashboard")
             return
 
-        if normalized in {"list_servers", "servers"}:
+        if normalized.startswith("list_servers") or normalized == "servers":
             app = self.app
-            if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
-                names = app.server_manager.get_all_server_names()
+            filter_value = normalized.replace("list_servers", "").strip()
+            server_manager = self._resolve_server_manager(app, main_screen)
+
+            if server_manager is not None:
+                if filter_value in {"connected", "online"}:
+                    connected = server_manager.get_connected_servers()
+                    names = sorted([str(name) for name in connected])
+                else:
+                    names = server_manager.get_all_server_names()
                 if names:
                     output = "Servers:\n" + "\n".join(f"- {name}" for name in names)
                 else:
                     output = "No servers configured"
+                self._set_command_output(output)
+            else:
+                self._set_command_output("No server manager available")
+            return
+
+        if normalized.startswith("list_libraries") or normalized == "libraries":
+            app = self.app
+            server_manager = self._resolve_server_manager(app, main_screen)
+            if server_manager is not None:
+                names: list[str] = []
+                for server_name in server_manager.get_all_server_names():
+                    status = server_manager.get_server_status(server_name)
+                    names.extend(status.get("library_names", []))
+                unique_names = sorted({name for name in names})
+                if unique_names:
+                    output = "Libraries:\n" + "\n".join(f"- {name}" for name in unique_names)
+                else:
+                    output = "No libraries found"
                 self._set_command_output(output)
             else:
                 self._set_command_output("No server manager available")
@@ -580,6 +626,16 @@ class MainScreen(Screen):
                 return
         panel: CommandPromptPanel = self.query_one(CommandPromptPanel)
         panel.set_output(message)
+
+    @staticmethod
+    def _resolve_server_manager(
+        app: App[object] | None, main_screen: Screen | None
+    ) -> ServerManager | None:
+        if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+            return app.server_manager
+        if isinstance(main_screen, MainScreen) and isinstance(main_screen.app, PlexiGlassApp):
+            return main_screen.app.server_manager
+        return None
 
     @staticmethod
     def _format_timestamp(timestamp: datetime) -> str:

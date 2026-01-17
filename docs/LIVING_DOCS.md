@@ -329,7 +329,10 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Real-time updates (refresh interval loop)
 - [x] Active sessions display (session details panel)
 - [x] Server health monitoring (last update timestamp)
-- [x] Quick actions menu
+- [x] Quick actions menu + command prompt launch
+- [x] Command prompt modal (input, history, output, ESC dismiss, ':' shortcut)
+- [x] Command prompt suggestions (grouped, help text, pagination)
+- [x] Command prompt commands: refresh/connect/gallery/list_servers/list_libraries/quit
 - [x] Dashboard CSS layout and theming
 
 #### Sprint 3: Gallery Foundation
