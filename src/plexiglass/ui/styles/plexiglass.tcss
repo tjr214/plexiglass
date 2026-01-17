@@ -1,0 +1,102 @@
+$bg-base: #0d1b1e;
+$bg-panel: #13272b;
+$bg-accent: #1b343a;
+$text-primary: #e6f1f2;
+$text-muted: #a7b6b9;
+$accent-cyan: #6bd9e3;
+$accent-amber: #ffb347;
+$accent-green: #6fdc8c;
+$accent-red: #ff6b6b;
+
+Screen {
+    background: #0d1b1e;
+    color: $text-primary;
+}
+
+Header, Footer {
+    background: $bg-panel;
+    color: $text-primary;
+}
+
+#dashboard {
+    layout: vertical;
+    padding: 1 2;
+    background: $bg-base;
+}
+
+.dashboard-summary {
+    background: $bg-panel;
+    border: tall $bg-accent;
+    padding: 1 2;
+    margin-bottom: 1;
+    color: $text-primary;
+    text-style: bold;
+    transition: background 300ms, color 300ms;
+}
+
+.highlight {
+    color: $accent-cyan;
+    text-style: bold;
+}
+
+.dashboard-row {
+    layout: horizontal;
+}
+
+.quick-actions {
+
+    width: 28%;
+    min-height: 8;
+    background: $bg-panel;
+    border: tall $accent-amber;
+    padding: 1 2;
+    color: $text-primary;
+    transition: background 300ms, color 300ms;
+}
+
+.session-panel {
+    width: 72%;
+    min-height: 8;
+    background: $bg-panel;
+    border: tall $accent-cyan;
+    padding: 1 2;
+    color: $text-primary;
+    transition: background 300ms, color 300ms;
+}
+
+.status-list {
+    layout: vertical;
+    margin-top: 1;
+}
+
+.status-card {
+    background: $bg-panel;
+    border: tall $bg-accent;
+    padding: 1 2;
+    transition: background 250ms, color 250ms;
+}
+
+.status-card.connected {
+    border: tall $accent-green;
+}
+
+.status-card.disconnected {
+    border: tall $accent-red;
+}
+
+.status-card:hover {
+    background: $bg-accent;
+}
+
+ServerStatusCard {
+    color: $text-primary;
+}
+
+DashboardSummary {
+    text-style: bold;
+}
+
+QuickActionsMenu, SessionDetailsPanel, DashboardSummary {
+    color: $text-primary;
+}
+

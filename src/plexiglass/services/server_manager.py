@@ -196,6 +196,8 @@ class ServerManager:
             "url": server_config["url"],
             "session_count": 0,
             "now_playing": [],
+            "library_count": 0,
+            "library_items": 0,
         }
 
         if name in self._connection_pool:
@@ -207,6 +209,10 @@ class ServerManager:
             sessions = self._safe_get_sessions(server)
             status["session_count"] = len(sessions)
             status["now_playing"] = [self._build_now_playing_entry(session) for session in sessions]
+
+            library_stats = self._get_library_stats(server)
+            status["library_count"] = library_stats["library_count"]
+            status["library_items"] = library_stats["library_items"]
 
         return status
 
@@ -267,6 +273,22 @@ class ServerManager:
             return None
 
         return max(0, min(progress, 100))
+
+    @staticmethod
+    def _get_library_stats(server: PlexServer) -> dict[str, int]:
+        try:
+            sections = list(server.library.sections())
+        except Exception:
+            return {"library_count": 0, "library_items": 0}
+
+        item_count = 0
+        for section in sections:
+            item_count += int(getattr(section, "totalSize", 0) or 0)
+
+        return {
+            "library_count": len(sections),
+            "library_items": item_count,
+        }
 
     def is_server_read_only(self, name: str) -> bool:
         """

@@ -325,11 +325,12 @@ undo_service.undo()  # Restores "Old Title"
 #### Sprint 2: Dashboard Mode
 - [x] Server status dashboard cards (status, sessions, now playing)
 - [x] Dashboard summary totals (servers, connected, sessions)
+- [x] Dashboard summary library stats (libraries, items)
 - [x] Real-time updates (refresh interval loop)
-- [ ] Active sessions display
-- [ ] Library statistics
-- [ ] Server health monitoring
-- [ ] Quick actions menu
+- [x] Active sessions display (session details panel)
+- [x] Server health monitoring (last update timestamp)
+- [x] Quick actions menu
+- [x] Dashboard CSS layout and theming
 
 #### Sprint 3: Gallery Foundation
 - [ ] Gallery screen layout

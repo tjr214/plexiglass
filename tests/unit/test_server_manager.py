@@ -319,6 +319,7 @@ class TestServerManager:
             mock_server.version = "1.40.0.7775"
             mock_server.platform = "Linux"
             mock_server.sessions.return_value = []
+            mock_server.library.sections.return_value = []
             mock_plex.return_value = mock_server
 
             manager.connect_to_default()
@@ -330,6 +331,8 @@ class TestServerManager:
         assert "version" in status
         assert "platform" in status
         assert status["session_count"] == 0
+        assert status["library_count"] == 0
+        assert status["library_items"] == 0
 
     def test_get_server_status_includes_now_playing(self, sample_config_path: Path) -> None:
         """
@@ -362,6 +365,7 @@ class TestServerManager:
             mock_server.version = "1.40.0.7775"
             mock_server.platform = "Linux"
             mock_server.sessions.return_value = [session]
+            mock_server.library.sections.return_value = [MagicMock(totalSize=12)]
             mock_plex.return_value = mock_server
 
             manager.connect_to_default()
@@ -373,6 +377,8 @@ class TestServerManager:
         assert status["now_playing"][0]["user"] == "neo"
         assert status["now_playing"][0]["state"] == "playing"
         assert status["now_playing"][0]["progress_percent"] == 25
+        assert status["library_count"] == 1
+        assert status["library_items"] == 12
 
     def test_get_all_server_names(self, sample_config_path: Path) -> None:
         """

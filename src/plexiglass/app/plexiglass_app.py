@@ -10,12 +10,14 @@ Provides the foundation for the PlexiGlass TUI including:
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from textual.app import App, ComposeResult
-from textual.screen import Screen
+from textual.containers import Container, Horizontal, Vertical
 from textual.message import Message
+from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
 from plexiglass.config.loader import ConfigLoader
@@ -28,22 +30,96 @@ class DashboardSummary(Static):
     def __init__(self, summary: dict[str, Any], **kwargs: Any) -> None:
         super().__init__("", **kwargs)
         self.summary = summary
+        self.last_update: str | None = None
+        self.add_class("dashboard-summary")
 
     def on_mount(self) -> None:
         self.update(self._render_summary())
 
-    def update_summary(self, summary: dict[str, Any]) -> None:
+    def update_summary(self, summary: dict[str, Any], last_update: str | None = None) -> None:
         self.summary = summary
+        if last_update is not None:
+            self.last_update = last_update
         self.update(self._render_summary())
 
     def _render_summary(self) -> str:
         total = self.summary.get("total_servers", 0)
         connected = self.summary.get("connected_servers", 0)
         sessions = self.summary.get("active_sessions", 0)
+        libraries = self.summary.get("total_libraries", 0)
+        library_items = self.summary.get("total_library_items", 0)
+        last_update = self.last_update or "-"
         return (
             "Dashboard Summary\n"
-            f"Servers: {total} | Connected: {connected} | Active Sessions: {sessions}"
+            f"Servers: {total} | Connected: {connected} | Active Sessions: {sessions}\n"
+            f"Libraries: {libraries} | Items: {library_items}\n"
+            f"[highlight]Last Update[/]: {last_update}"
         )
+
+
+class SessionDetailsPanel(Static):
+    """Detailed session list panel for all servers."""
+
+    def __init__(self, sessions: list[dict[str, Any]], **kwargs: Any) -> None:
+        super().__init__("", **kwargs)
+        self.sessions = sessions
+        self.add_class("session-panel")
+
+    def on_mount(self) -> None:
+        self.update(self._render_sessions())
+
+    def update_sessions(self, sessions: list[dict[str, Any]]) -> None:
+        self.sessions = sessions
+        self.update(self._render_sessions())
+
+    def _render_sessions(self) -> str:
+        if not self.sessions:
+            return "Active Sessions\nNone"
+
+        lines = ["Active Sessions"]
+        for entry in self.sessions:
+            server = entry.get("server", "Unknown")
+            title = entry.get("title", "Unknown")
+            user = entry.get("user", "Unknown")
+            state = entry.get("state", "unknown")
+            progress = entry.get("progress_percent")
+            progress_display = "-" if progress is None else f"{progress}%"
+            lines.append(f"{server}: {title} ({user}) [{state}] {progress_display}")
+
+        return "\n".join(lines)
+
+
+class QuickActionsMenu(Static):
+    """Quick actions menu for dashboard shortcuts."""
+
+    def __init__(self, actions: list[str], **kwargs: Any) -> None:
+        super().__init__("", **kwargs)
+        self.actions = actions
+        self.add_class("quick-actions")
+
+    def on_mount(self) -> None:
+        self.update(self._render_actions())
+
+    def update_actions(self, actions: list[str]) -> None:
+        self.actions = actions
+        self.update(self._render_actions())
+
+    def trigger_action(self, action_key: str) -> None:
+        self.post_message(self.ActionTriggered(action_key))
+
+    def _render_actions(self) -> str:
+        if not self.actions:
+            return "Quick Actions\nNone"
+        return "Quick Actions\n" + "\n".join(f"- {action}" for action in self.actions)
+
+    class ActionTriggered(Message):
+        """Message fired when a quick action is triggered."""
+
+        bubble = True
+
+        def __init__(self, action_key: str) -> None:
+            super().__init__()
+            self.action_key = action_key
 
 
 class ServerStatusCard(Static):
@@ -52,13 +128,25 @@ class ServerStatusCard(Static):
     def __init__(self, status: dict[str, Any], **kwargs: Any) -> None:
         super().__init__("", **kwargs)
         self.status = status
+        self.add_class("status-card")
+        self._apply_status_class()
 
     def on_mount(self) -> None:
+        self._apply_status_class()
         self.update(self._render_status())
 
     def update_status(self, status: dict[str, Any]) -> None:
         self.status = status
+        self._apply_status_class()
         self.update(self._render_status())
+
+    def _apply_status_class(self) -> None:
+        if self.status.get("connected"):
+            self.add_class("connected")
+            self.remove_class("disconnected")
+        else:
+            self.add_class("disconnected")
+            self.remove_class("connected")
 
     def _render_status(self) -> str:
         name = self.status.get("name", "Unknown")
@@ -68,10 +156,11 @@ class ServerStatusCard(Static):
         platform = self.status.get("platform", "-")
         session_count = self.status.get("session_count", 0)
         now_playing = self._format_now_playing(self.status.get("now_playing", []))
+        status_style = "[green]" if self.status.get("connected") else "[red]"
 
         lines = [
             f"{name}",
-            f"{connected} | {url}",
+            f"{status_style}{connected}[/] | {url}",
             f"Version: {version} | Platform: {platform}",
             f"Sessions: {session_count}",
         ]
@@ -100,6 +189,7 @@ class MainScreen(Screen):
     """Main dashboard screen showing server status cards."""
 
     refresh_handle = None
+    last_manual_refresh = False
 
     class DashboardRefresh(Message):
         """Message for refreshing dashboard data."""
@@ -107,17 +197,26 @@ class MainScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
 
-        summary = self._build_summary()
-        yield DashboardSummary(summary)
+        with Container(id="dashboard", classes="dashboard"):
+            summary = self._build_summary()
+            yield DashboardSummary(summary)
 
-        server_names: list[str] = []
-        app = self.app
-        if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
-            server_names = app.server_manager.get_all_server_names()
+            with Horizontal(classes="dashboard-row"):
+                actions = self._build_quick_actions()
+                yield QuickActionsMenu(actions)
 
-        for name in server_names:
-            status = self._get_server_status(name)
-            yield ServerStatusCard(status)
+                sessions = self._build_session_details()
+                yield SessionDetailsPanel(sessions)
+
+            with Vertical(classes="status-list"):
+                server_names: list[str] = []
+                app = self.app
+                if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+                    server_names = app.server_manager.get_all_server_names()
+
+                for name in server_names:
+                    status = self._get_server_status(name)
+                    yield ServerStatusCard(status)
 
         yield Footer()
 
@@ -129,6 +228,10 @@ class MainScreen(Screen):
                 app.config_loader.get_settings().get("ui", {}).get("refresh_interval", 5)
             )
         self.refresh_handle = self.set_interval(refresh_interval, self._trigger_refresh)
+        summary_widget: DashboardSummary = self.query_one(DashboardSummary)
+        summary_widget.update_summary(
+            self._build_summary(), last_update=self._format_timestamp(datetime.now())
+        )
 
     def _trigger_refresh(self) -> None:
         self.post_message(self.DashboardRefresh())
@@ -137,10 +240,34 @@ class MainScreen(Screen):
         del message
         self._refresh_dashboard()
 
+    def on_quick_actions_menu_action_triggered(
+        self, message: "QuickActionsMenu.ActionTriggered"
+    ) -> None:
+        if message.action_key == "refresh":
+            self.last_manual_refresh = True
+            self._refresh_dashboard()
+            return
+        elif message.action_key == "connect_default":
+            app = self.app
+            if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+                app.server_manager.connect_to_default()
+        elif message.action_key == "open_gallery":
+            app = self.app
+            if isinstance(app, PlexiGlassApp):
+                app.action_show_gallery()
+
     def _refresh_dashboard(self) -> None:
         app = self.app
         summary_widget: DashboardSummary = self.query_one(DashboardSummary)
-        summary_widget.update_summary(self._build_summary())
+        summary_widget.update_summary(
+            self._build_summary(), last_update=self._format_timestamp(datetime.now())
+        )
+
+        actions_widget: QuickActionsMenu = self.query_one(QuickActionsMenu)
+        actions_widget.update_actions(self._build_quick_actions())
+
+        sessions_widget: SessionDetailsPanel = self.query_one(SessionDetailsPanel)
+        sessions_widget.update_sessions(self._build_session_details())
 
         for card in self.query(ServerStatusCard):
             status = self._get_server_status(card.status.get("name", ""))
@@ -163,6 +290,8 @@ class MainScreen(Screen):
         server_names: list[str] = []
         connected_count = 0
         session_count = 0
+        library_count = 0
+        library_items = 0
 
         if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
             server_names = app.server_manager.get_all_server_names()
@@ -171,12 +300,41 @@ class MainScreen(Screen):
                 if status.get("connected"):
                     connected_count += 1
                 session_count += int(status.get("session_count", 0))
+                library_count += int(status.get("library_count", 0))
+                library_items += int(status.get("library_items", 0))
 
         return {
             "total_servers": len(server_names),
             "connected_servers": connected_count,
             "active_sessions": session_count,
+            "total_libraries": library_count,
+            "total_library_items": library_items,
         }
+
+    def _build_session_details(self) -> list[dict[str, Any]]:
+        app = self.app
+        sessions: list[dict[str, Any]] = []
+
+        if isinstance(app, PlexiGlassApp) and app.server_manager is not None:
+            for name in app.server_manager.get_all_server_names():
+                status = app.server_manager.get_server_status(name)
+                for entry in status.get("now_playing", []):
+                    session_entry = entry.copy()
+                    session_entry["server"] = name
+                    sessions.append(session_entry)
+
+        return sessions
+
+    def _build_quick_actions(self) -> list[str]:
+        return [
+            "Refresh Dashboard",
+            "Connect Default Server",
+            "Open Gallery",
+        ]
+
+    @staticmethod
+    def _format_timestamp(timestamp: datetime) -> str:
+        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class GalleryScreen(Screen):
@@ -216,6 +374,7 @@ class PlexiGlassApp(App):
     This is the main Textual application class.
     """
 
+    CSS_PATH = "../ui/styles/plexiglass.tcss"
     TITLE = "PlexiGlass"
     SUB_TITLE = "Plex Media Server Dashboard & API Gallery"
 

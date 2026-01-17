@@ -10,6 +10,7 @@ This module tests the Textual application including:
 """
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -241,6 +242,148 @@ class TestMainScreen:
             assert summary is not None
 
     @pytest.mark.asyncio
+    async def test_main_screen_summary_includes_library_stats(
+        self, sample_config_path: Path
+    ) -> None:
+        """
+        RED TEST: Summary should include library statistics.
+
+        Expected behavior:
+        - Summary render includes library count and items
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            summary = app.screen.query_one("DashboardSummary")
+            summary_text = str(summary.render())
+            assert "Libraries" in summary_text
+
+    @pytest.mark.asyncio
+    async def test_main_screen_shows_session_details_panel(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should display session details panel.
+
+        Expected behavior:
+        - Render session details widget
+        - Shows per-server now playing entries
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            panel = app.screen.query_one("SessionDetailsPanel")
+            assert panel is not None
+
+    @pytest.mark.asyncio
+    async def test_main_screen_shows_quick_actions_menu(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Should display quick actions menu.
+
+        Expected behavior:
+        - Render quick actions widget
+        - Includes refresh and connect actions
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Assert
+            menu = app.screen.query_one("QuickActionsMenu")
+            assert menu is not None
+
+    @pytest.mark.asyncio
+    async def test_quick_actions_menu_triggers_connect(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Quick actions should call connect action.
+
+        Expected behavior:
+        - Selecting connect action calls server manager connect
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        with patch("plexiglass.app.plexiglass_app.ServerManager") as mock_manager:
+            mock_manager.return_value.connect_to_default.return_value = None
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                menu = app.screen.query_one("QuickActionsMenu")
+                trigger_action = getattr(menu, "trigger_action")
+                trigger_action("connect_default")
+
+            # Assert
+            assert mock_manager.return_value.connect_to_default.called
+
+    @pytest.mark.asyncio
+    async def test_quick_actions_menu_triggers_refresh(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Quick actions should trigger refresh.
+
+        Expected behavior:
+        - Selecting refresh action triggers dashboard refresh
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            menu = app.screen.query_one("QuickActionsMenu")
+            trigger_action = getattr(menu, "trigger_action")
+            trigger_action("refresh")
+            await pilot.pause()
+
+            # Assert
+            assert hasattr(app.screen, "last_manual_refresh")
+            assert getattr(app.screen, "last_manual_refresh") is True
+
+    @pytest.mark.asyncio
+    async def test_quick_actions_menu_triggers_gallery(self, sample_config_path: Path) -> None:
+        """
+        RED TEST: Quick actions should open gallery.
+
+        Expected behavior:
+        - Selecting gallery action switches screen
+        """
+        # Arrange
+        from plexiglass.app.plexiglass_app import PlexiGlassApp
+
+        app = PlexiGlassApp(config_path=sample_config_path)
+
+        # Act
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            menu = app.screen.query_one("QuickActionsMenu")
+            trigger_action = getattr(menu, "trigger_action")
+            trigger_action("open_gallery")
+            await pilot.pause()
+
+            # Assert
+            assert app.screen.__class__.__name__ == "GalleryScreen" or app.screen.id == "gallery"
+
+    @pytest.mark.asyncio
     async def test_main_screen_auto_refreshes(self, sample_config_path: Path) -> None:
         """
         RED TEST: Should refresh dashboard status on interval.
@@ -248,6 +391,7 @@ class TestMainScreen:
         Expected behavior:
         - Use refresh interval from config settings
         - Schedule periodic refresh
+        - Summary shows last update timestamp
         """
         # Arrange
         from plexiglass.app.plexiglass_app import PlexiGlassApp
@@ -263,6 +407,10 @@ class TestMainScreen:
             assert screen is not None
             assert hasattr(screen, "refresh_handle")
             assert getattr(screen, "refresh_handle") is not None
+
+            summary = screen.query_one("DashboardSummary")
+            assert hasattr(summary, "last_update")
+            assert getattr(summary, "last_update") is not None
 
     @pytest.mark.asyncio
     async def test_main_screen_has_header(self, sample_config_path: Path) -> None:
