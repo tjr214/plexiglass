@@ -41,6 +41,8 @@ A complete, interactive demonstration platform for **every python-plexapi featur
 - ✅ Library health and statistics
 - ✅ Performance metrics
 - ✅ Quick admin actions
+- ✅ Command prompt with shortcuts and commands
+- ✅ Guided server config setup (blocking modal)
 
 ### Gallery Mode  
 - ✅ Every python-plexapi feature demonstrated
@@ -81,11 +83,15 @@ cd /path/to/plexiglass
 uv tool install .
 
 # Configure servers
+# If no config exists, PlexiGlass will open a guided setup UI
+# (multi-server builder with live validation).
+
+# Optional: copy the example file
 mkdir -p ~/.config/plexiglass
 cp config/servers.example.yaml ~/.config/plexiglass/servers.yaml
 # Edit ~/.config/plexiglass/servers.yaml with your Plex server details
 
-# Set environment variables for tokens
+# Set environment variables for tokens (optional)
 export PLEX_TOKEN_HOME="your-plex-token-here"
 
 # Run PlexiGlass from anywhere!
@@ -102,11 +108,12 @@ cd plexiglass
 # Install dependencies
 uv sync --all-extras
 
-# Copy and configure servers
-cp config/servers.example.yaml config/servers.yaml
-# Edit config/servers.yaml with your Plex server details
+# Copy and configure servers (optional)
+# If no config exists, PlexiGlass will open a guided setup UI
+cp config/servers.example.yaml ~/.config/plexiglass/servers.yaml
+# Edit ~/.config/plexiglass/servers.yaml with your Plex server details
 
-# Set environment variables for tokens
+# Set environment variables for tokens (optional)
 export PLEX_TOKEN_HOME="your-plex-token-here"
 
 # Run tests to verify setup
@@ -134,6 +141,15 @@ uv run textual console
 ```
 
 ---
+
+## ⚙️ Configuration
+
+PlexiGlass reads configuration from:
+- `~/.config/plexiglass/servers.yaml` (default)
+
+If missing or invalid, PlexiGlass blocks startup and offers a guided setup UI that validates your server URL and token, auto-fills the server name, and writes full defaults.
+
+Token retrieval (Plex Web): open any media item XML and copy `X-Plex-Token` from the URL.
 
 ## 📚 Gallery Categories
 
@@ -247,8 +263,8 @@ uv run ruff format .
 
 ### 🔄 In Progress
 
-- [ ] Core implementation (Sprints 1-6)
-- [ ] Dashboard mode
+- [ ] Core implementation (Sprints 3-6)
+- [x] Dashboard mode
 - [ ] Gallery foundation
 - [ ] Demo implementations
 

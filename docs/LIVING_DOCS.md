@@ -3,7 +3,7 @@
 **Project**: PlexiGlass  
 **Version**: 0.1.0  
 **Last Updated**: 2026-01-17  
-**Status**: Sprint 1 Foundation Complete ✅
+**Status**: Sprint 2 Dashboard Mode Complete ✅
 
 ---
 
@@ -322,19 +322,21 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Server card widget
 - [x] Configuration loader
 
-#### Sprint 2: Dashboard Mode
+#### Sprint 2: Dashboard Mode (COMPLETE)
 - [x] Server status dashboard cards (status, sessions, now playing)
 - [x] Dashboard summary totals (servers, connected, sessions)
 - [x] Dashboard summary library stats (libraries, items)
 - [x] Real-time updates (refresh interval loop)
 - [x] Active sessions display (session details panel)
 - [x] Server health monitoring (last update timestamp)
-- [x] Quick actions menu + command prompt launch
+- [x] Quick actions menu with buttons
 - [x] Command prompt modal (input, history, output, ESC dismiss, ':' shortcut)
 - [x] Command prompt suggestions (grouped, help text, pagination)
-- [x] Command prompt commands: refresh/connect/gallery/list_servers/list_libraries/quit
+- [x] Command prompt commands: refresh/connect/disconnect/edit_config/list_servers/list_libraries/quit
+- [x] Command prompt partial-match + clickable command list
 - [x] Config setup flow (blocking prompt + multi-server builder)
 - [x] Config defaults (user-local path, full settings write, validation)
+- [x] Edit config flow (reuse builder + load existing config)
 - [x] Dashboard CSS layout and theming
 
 #### Sprint 3: Gallery Foundation
