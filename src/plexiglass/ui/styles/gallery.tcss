@@ -1,0 +1,61 @@
+/*
+ * Gallery Screen Styles
+ *
+ * CSS styling for the PlexiGlass API Gallery screen.
+ */
+
+/* Gallery Container Layout */
+#gallery-container {
+    height: 1fr;
+    layout: horizontal;
+}
+
+/* Category List Sidebar */
+.category-list {
+    width: 30;
+    border: solid $primary;
+    background: $panel;
+    padding: 1 2;
+    margin: 1;
+}
+
+.category-list:focus {
+    border: heavy $accent;
+}
+
+/* Demo Panel */
+.demo-panel {
+    width: 1fr;
+    border: solid $primary;
+    background: $surface;
+    padding: 1 2;
+    margin: 1;
+}
+
+.demo-panel:focus {
+    border: heavy $accent;
+}
+
+/* Gallery Screen Title */
+GalleryScreen Header {
+    background: $boost;
+}
+
+GalleryScreen Header .header--title {
+    color: $success;
+    text-style: bold;
+}
+
+/* Gallery Footer */
+GalleryScreen Footer {
+    background: $panel;
+}
+
+GalleryScreen Footer .footer--key {
+    background: $primary;
+    color: $text;
+}
+
+GalleryScreen Footer .footer--description {
+    color: $text-muted;
+}
