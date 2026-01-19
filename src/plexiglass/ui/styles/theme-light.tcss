@@ -1,0 +1,233 @@
+/*
+ * PlexiGlass Light Theme
+ * 
+ * Light color variant for PlexiGlass with inverted color scheme.
+ * This theme provides a bright, clean interface for daylight usage.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE - Light Theme
+ * ============================================================================ */
+
+/* Base Colors - Background hierarchy (inverted from dark) */
+$bg-base: #f5f7f8;           /* Lightest - main background */
+$bg-surface: #ffffff;        /* Surface level - cards, panels */
+$bg-elevated: #e6f1f2;       /* Elevated elements - modals, overlays */
+$bg-hover: #d4e6e8;          /* Hover state background */
+$bg-active: #c2d8db;         /* Active/pressed state */
+
+/* Text Colors - Hierarchy (inverted from dark) */
+$text-primary: #0d1b1e;      /* Primary text - high emphasis */
+$text-secondary: #2a4750;    /* Secondary text - medium emphasis */
+$text-muted: #5a6e72;        /* Muted text - low emphasis */
+$text-disabled: #8a9ea2;     /* Disabled text */
+
+/* Accent Colors - Brand & Semantic (adjusted for light background) */
+$accent-primary: #0099a8;    /* Primary accent - darker cyan */
+$accent-secondary: #ff8c00;  /* Secondary accent - darker amber */
+$accent-tertiary: #7c3aed;   /* Tertiary accent - darker purple */
+
+/* Semantic Colors - Status & Feedback (adjusted for light background) */
+$color-success: #059669;     /* Success state - darker green */
+$color-warning: #d97706;     /* Warning state - darker amber */
+$color-error: #dc2626;       /* Error state - darker red */
+$color-info: #0099a8;        /* Info state - darker cyan */
+
+/* Border Colors (inverted) */
+$border-subtle: #e6f1f2;     /* Subtle borders */
+$border-default: #b8c9cc;    /* Default borders */
+$border-emphasis: #8a9ea2;   /* Emphasized borders */
+$border-focus: #0099a8;      /* Focus indicator */
+
+/* ============================================================================
+ * SPACING SCALE (same as dark theme)
+ * ============================================================================ */
+/* Textual uses integer spacing */
+
+/* ============================================================================
+ * TRANSITIONS & ANIMATIONS (same as dark theme)
+ * ============================================================================ */
+$transition-fast: 150ms;
+$transition-base: 250ms;
+$transition-slow: 350ms;
+$transition-slower: 500ms;
+
+/* ============================================================================
+ * EFFECTS & OVERLAYS (inverted)
+ * ============================================================================ */
+$overlay-light: rgba(255, 255, 255, 0.7);    /* Light overlay */
+$overlay-medium: rgba(255, 255, 255, 0.85);  /* Medium overlay */
+$overlay-heavy: rgba(255, 255, 255, 0.95);   /* Heavy overlay */
+
+/* ============================================================================
+ * COMPONENT-SPECIFIC TOKENS
+ * ============================================================================ */
+
+/* Buttons */
+$button-bg-primary: $accent-primary;
+$button-bg-secondary: $bg-elevated;
+$button-bg-success: $color-success;
+$button-bg-danger: $color-error;
+$button-text-primary: $bg-base;
+$button-text-secondary: $text-primary;
+
+/* Inputs */
+$input-bg: $bg-surface;
+$input-border: $border-default;
+$input-border-focus: $border-focus;
+$input-text: $text-primary;
+$input-placeholder: $text-muted;
+
+/* Panels & Cards */
+$panel-bg: $bg-surface;
+$panel-border: $border-default;
+$panel-border-hover: $border-emphasis;
+
+$card-bg: $bg-surface;
+$card-border: $border-subtle;
+$card-border-hover: $accent-primary;
+
+/* Modals */
+$modal-bg: $bg-surface;
+$modal-border: $accent-primary;
+$modal-overlay: $overlay-medium;
+
+/* Lists */
+$list-item-bg: transparent;
+$list-item-bg-hover: $bg-hover;
+$list-item-bg-selected: $accent-primary;
+$list-item-text: $text-primary;
+$list-item-text-selected: $bg-base;
+
+/* Headers & Footers */
+$header-bg: $bg-surface;
+$header-text: $text-primary;
+$footer-bg: $bg-surface;
+$footer-text: $text-secondary;
+
+/* Code Blocks */
+$code-bg: #f3f4f6;
+$code-border: $border-default;
+$code-text: $text-primary;
+
+/* Status Indicators */
+$status-connected: $color-success;
+$status-disconnected: $color-error;
+$status-loading: $accent-secondary;
+
+/* ============================================================================
+ * GLOBAL STYLES
+ * ============================================================================ */
+
+Screen {
+    background: $bg-base;
+    color: $text-primary;
+}
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================ */
+
+/* Text Utilities */
+.text-primary {
+    color: $text-primary;
+}
+
+.text-secondary {
+    color: $text-secondary;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.text-success {
+    color: $color-success;
+}
+
+.text-warning {
+    color: $color-warning;
+}
+
+.text-error {
+    color: $color-error;
+}
+
+.text-info {
+    color: $color-info;
+}
+
+.text-bold {
+    text-style: bold;
+}
+
+/* Background Utilities */
+.bg-surface {
+    background: $bg-surface;
+}
+
+.bg-elevated {
+    background: $bg-elevated;
+}
+
+/* Border Utilities */
+.border-subtle {
+    border: solid $border-subtle;
+}
+
+.border-default {
+    border: solid $border-default;
+}
+
+.border-primary {
+    border: solid $accent-primary;
+}
+
+.border-success {
+    border: solid $color-success;
+}
+
+.border-warning {
+    border: solid $color-warning;
+}
+
+.border-error {
+    border: solid $color-error;
+}
+
+/* Transition Utilities */
+.transition-fast {
+    transition: background $transition-fast, 
+                color $transition-fast, 
+                border $transition-fast;
+}
+
+.transition-base {
+    transition: background $transition-base, 
+                color $transition-base, 
+                border $transition-base;
+}
+
+.transition-slow {
+    transition: background $transition-slow, 
+                color $transition-slow, 
+                border $transition-slow;
+}
+
+/* ============================================================================
+ * RESPONSIVE HELPERS
+ * ============================================================================ */
+
+/* Focus States */
+*:focus {
+    border: heavy $border-focus;
+}
+
+/* Hover States */
+.hoverable:hover {
+    background: $bg-hover;
+}
+
+/* ============================================================================
+ * END LIGHT THEME
+ * ============================================================================ */

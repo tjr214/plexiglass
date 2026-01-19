@@ -1,102 +1,435 @@
 /*
  * Gallery Screen Styles
  *
- * CSS styling for the PlexiGlass API Gallery screen.
+ * Enhanced CSS styling for the PlexiGlass API Gallery screen with
+ * consistent theming, smooth transitions, and visual hierarchy.
  */
 
-/* Gallery Container Layout */
+/* ============================================================================
+ * COLOR PALETTE (aligned with theme.tcss)
+ * ============================================================================ */
+$bg-base: #0d1b1e;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+$bg-hover: #224650;
+
+$text-primary: #e6f1f2;
+$text-secondary: #b8c9cc;
+$text-muted: #8a9ea2;
+
+$accent-primary: #6bd9e3;
+$accent-secondary: #ffb347;
+$accent-tertiary: #a78bfa;
+
+$color-success: #6fdc8c;
+$color-warning: #ffb347;
+$color-error: #ff6b6b;
+
+$border-subtle: #1b343a;
+$border-default: #2a5360;
+$border-focus: #6bd9e3;
+
+$transition-fast: 150ms;
+$transition-base: 250ms;
+$transition-slow: 350ms;
+
+/* ============================================================================
+ * GALLERY CONTAINER LAYOUT
+ * ============================================================================ */
+
 #gallery-container {
     height: 1fr;
     layout: horizontal;
+    background: $bg-base;
 }
 
-/* Category List Sidebar */
+/* ============================================================================
+ * CATEGORY MENU (Left Sidebar)
+ * ============================================================================ */
+
 .category-menu {
     width: 30;
-    border: solid $primary;
-    background: $panel;
+    border: solid $accent-tertiary;
+    background: $bg-surface;
     padding: 1;
     margin: 1;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+.category-menu:hover {
+    background: $bg-hover;
 }
 
 .category-menu:focus {
-    border: heavy $accent;
+    border: heavy $border-focus;
+    background: $bg-elevated;
 }
+
+/* ============================================================================
+ * DEMO LIST (Middle Panel)
+ * ============================================================================ */
 
 .demo-list {
     width: 36;
-    border: solid $primary;
-    background: $panel;
+    border: solid $accent-primary;
+    background: $bg-surface;
     padding: 1;
     margin: 1;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+.demo-list:hover {
+    background: $bg-hover;
 }
 
 .demo-list:focus {
-    border: heavy $accent;
+    border: heavy $border-focus;
+    background: $bg-elevated;
 }
 
-/* Demo Panel */
+/* ============================================================================
+ * DEMO PANEL (Right Panel - Main Content)
+ * ============================================================================ */
+
 #demo-panel {
     width: 1fr;
-    border: solid $primary;
-    background: $surface;
+    border: solid $accent-secondary;
+    background: $bg-surface;
     padding: 1;
     margin: 1;
+    transition: background $transition-base,
+                border $transition-base;
 }
+
+#demo-panel:hover {
+    background: $bg-hover;
+}
+
+#demo-panel:focus {
+    border: heavy $border-focus;
+}
+
+/* ============================================================================
+ * DEMO PANEL COMPONENTS
+ * ============================================================================ */
 
 #demo-summary {
     height: auto;
     margin: 0 0 1 0;
+    padding: 1;
+    background: $bg-elevated;
+    border: solid $border-subtle;
+    color: $text-primary;
+    transition: background $transition-base;
+}
+
+#demo-summary:hover {
+    background: $bg-hover;
 }
 
 .code-viewer {
     height: 1fr;
     margin: 0 0 1 0;
+    background: $bg-base;
+    border: solid $border-default;
+    padding: 1;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+.code-viewer:focus {
+    border: solid $border-focus;
 }
 
 #demo-params {
     height: auto;
     margin: 0 0 1 0;
+    background: $bg-elevated;
+    border: solid $border-subtle;
+    padding: 1;
+    transition: background $transition-base;
 }
 
 #results-display {
     height: 1fr;
     margin: 0 0 1 0;
+    background: $bg-base;
+    border: solid $border-default;
+    padding: 1;
+    color: $text-primary;
+    transition: background $transition-base,
+                border $transition-base;
 }
+
+#results-display:focus {
+    border: solid $border-focus;
+}
+
+/* ============================================================================
+ * DEMO ACTION BUTTONS
+ * ============================================================================ */
 
 #run-demo {
     width: 16;
     margin: 0 0 1 0;
+    background: $color-success;
+    color: $bg-base;
+    border: solid $color-success;
+    text-style: bold;
+    transition: background $transition-fast,
+                border $transition-fast;
+}
+
+#run-demo:hover {
+    background: #80e49d;
+    border: solid #80e49d;
+}
+
+#run-demo:focus {
+    border: heavy $border-focus;
 }
 
 #undo-button {
     width: 16;
+    background: $color-warning;
+    color: $bg-base;
+    border: solid $color-warning;
+    text-style: bold;
+    transition: background $transition-fast,
+                border $transition-fast;
 }
 
-#demo-panel:focus {
-    border: heavy $accent;
+#undo-button:hover {
+    background: #ffc061;
+    border: solid #ffc061;
 }
 
-/* Gallery Screen Title */
+#undo-button:focus {
+    border: heavy $border-focus;
+}
+
+#undo-button:disabled {
+    background: $bg-surface;
+    color: $text-muted;
+    border: solid $border-subtle;
+}
+
+/* ============================================================================
+ * GALLERY SCREEN HEADER & FOOTER
+ * ============================================================================ */
+
 GalleryScreen Header {
-    background: $boost;
+    background: $bg-surface;
+    border-bottom: solid $border-default;
+    transition: background $transition-base;
+}
+
+GalleryScreen Header:hover {
+    background: $bg-hover;
 }
 
 GalleryScreen Header .header--title {
-    color: $success;
+    color: $accent-primary;
     text-style: bold;
 }
 
-/* Gallery Footer */
 GalleryScreen Footer {
-    background: $panel;
+    background: $bg-surface;
+    border-top: solid $border-default;
 }
 
 GalleryScreen Footer .footer--key {
-    background: $primary;
-    color: $text;
+    background: $accent-primary;
+    color: $bg-base;
+    padding: 0 1;
+    border-radius: 1;
 }
 
 GalleryScreen Footer .footer--description {
+    color: $text-secondary;
+}
+
+/* ============================================================================
+ * LIST ITEM STYLES (For Category & Demo Lists)
+ * ============================================================================ */
+
+.category-menu ListItem {
+    padding: 1 2;
+    color: $text-primary;
+    transition: background $transition-fast,
+                color $transition-fast;
+}
+
+.category-menu ListItem:hover {
+    background: $bg-hover;
+    color: $accent-tertiary;
+}
+
+.category-menu ListItem.-selected {
+    background: $accent-tertiary;
+    color: $bg-base;
+    text-style: bold;
+}
+
+.demo-list ListItem {
+    padding: 1 2;
+    color: $text-primary;
+    transition: background $transition-fast,
+                color $transition-fast;
+}
+
+.demo-list ListItem:hover {
+    background: $bg-hover;
+    color: $accent-primary;
+}
+
+.demo-list ListItem.-selected {
+    background: $accent-primary;
+    color: $bg-base;
+    text-style: bold;
+}
+
+/* ============================================================================
+ * CODE HIGHLIGHTING
+ * ============================================================================ */
+
+.code-viewer Static {
+    color: $text-primary;
+    background: $bg-base;
+}
+
+.code-comment {
     color: $text-muted;
 }
+
+.code-keyword {
+    color: $accent-tertiary;
+    text-style: bold;
+}
+
+.code-string {
+    color: $color-success;
+}
+
+.code-function {
+    color: $accent-primary;
+}
+
+.code-number {
+    color: $accent-secondary;
+}
+
+/* ============================================================================
+ * RESULTS DISPLAY
+ * ============================================================================ */
+
+#results-display Static {
+    color: $text-primary;
+    background: transparent;
+}
+
+.result-success {
+    color: $color-success;
+}
+
+.result-error {
+    color: $color-error;
+}
+
+.result-info {
+    color: $accent-primary;
+}
+
+.result-warning {
+    color: $color-warning;
+}
+
+/* ============================================================================
+ * LOADING & PROGRESS STATES
+ * ============================================================================ */
+
+.demo-loading {
+    color: $accent-secondary;
+    text-style: bold;
+    background: $bg-elevated;
+    padding: 2;
+    border: solid $accent-secondary;
+    align: center middle;
+}
+
+.demo-progress {
+    background: $bg-surface;
+    border: solid $border-default;
+    height: 1;
+    margin: 1 0;
+}
+
+.demo-progress-fill {
+    background: $accent-primary;
+    height: 1;
+}
+
+/* ============================================================================
+ * EMPTY STATES
+ * ============================================================================ */
+
+.empty-state {
+    color: $text-muted;
+    text-align: center;
+    padding: 4;
+    background: $bg-surface;
+    border: solid $border-subtle;
+}
+
+.empty-state-icon {
+    color: $accent-secondary;
+    text-style: bold;
+}
+
+/* ============================================================================
+ * SCROLLABLE CONTAINERS
+ * ============================================================================ */
+
+.scrollable {
+    overflow-y: scroll;
+    scrollbar-background: $bg-surface;
+    scrollbar-color: $accent-primary;
+}
+
+.scrollable:hover {
+    scrollbar-color: $accent-secondary;
+}
+
+/* ============================================================================
+ * ACCESSIBILITY & FOCUS STATES
+ * ============================================================================ */
+
+*:focus-within {
+    transition: border $transition-fast;
+}
+
+.keyboard-focus {
+    border: heavy $border-focus;
+    outline: solid $accent-primary;
+}
+
+/* ============================================================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================================================ */
+
+/* When terminal width is small, adjust panel widths */
+@media (max-width: 100) {
+    .category-menu {
+        width: 25;
+    }
+    
+    .demo-list {
+        width: 30;
+    }
+}
+
+/* ============================================================================
+ * END GALLERY STYLES
+ * ============================================================================ */

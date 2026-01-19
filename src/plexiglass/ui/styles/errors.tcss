@@ -1,0 +1,132 @@
+/*
+ * Error Display Widget Styles
+ *
+ * Styling for error toasts and error modals with color-coded severity levels.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE
+ * ============================================================================ */
+$bg-base: #0d1b1e;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+
+$text-primary: #e6f1f2;
+$text-secondary: #b8c9cc;
+
+$color-success: #6fdc8c;
+$color-warning: #ffb347;
+$color-error: #ff6b6b;
+$color-info: #6bd9e3;
+
+$transition-fast: 150ms;
+$transition-base: 250ms;
+
+/* ============================================================================
+ * ERROR TOAST
+ * ============================================================================ */
+
+ErrorToast {
+    width: auto;
+    height: auto;
+    padding: 1 2;
+    margin: 1;
+    background: $bg-elevated;
+    border: solid $color-error;
+    color: $text-primary;
+    transition: background $transition-base,
+                border $transition-base,
+                opacity $transition-base;
+}
+
+ErrorToast.-critical {
+    background: rgba(255, 107, 107, 0.2);
+    border: heavy $color-error;
+    color: $color-error;
+    text-style: bold;
+}
+
+ErrorToast.-warning {
+    background: rgba(255, 179, 71, 0.2);
+    border: solid $color-warning;
+    color: $color-warning;
+}
+
+ErrorToast.-info {
+    background: rgba(107, 217, 227, 0.2);
+    border: solid $color-info;
+    color: $color-info;
+}
+
+ErrorToast:hover {
+    opacity: 0.8;
+}
+
+/* ============================================================================
+ * ERROR MODAL
+ * ============================================================================ */
+
+ErrorModal {
+    align: center middle;
+    width: 60%;
+    height: auto;
+    max-height: 50%;
+    background: $bg-surface;
+    border: tall $color-error;
+    padding: 2 3;
+    transition: background $transition-base;
+}
+
+ErrorModal:hover {
+    background: $bg-elevated;
+}
+
+.error-title {
+    color: $color-error;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.error-title.-critical {
+    color: $color-error;
+    text-style: bold;
+}
+
+.error-title.-warning {
+    color: $color-warning;
+    text-style: bold;
+}
+
+.error-title.-info {
+    color: $color-info;
+    text-style: bold;
+}
+
+.error-message {
+    color: $text-primary;
+    margin: 1 0;
+    padding: 1;
+    background: $bg-base;
+    border: solid $bg-elevated;
+}
+
+.error-details {
+    color: $text-secondary;
+    margin-top: 1;
+    padding: 1;
+    background: $bg-base;
+    border: solid $bg-elevated;
+}
+
+.error-actions {
+    margin-top: 2;
+    align: center middle;
+}
+
+.error-actions Button {
+    margin: 0 1;
+}
+
+/* ============================================================================
+ * END ERROR WIDGET STYLES
+ * ============================================================================ */

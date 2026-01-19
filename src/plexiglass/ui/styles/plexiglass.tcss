@@ -1,26 +1,69 @@
+/*
+ * PlexiGlass Main Application Styles
+ * 
+ * Enhanced with comprehensive theming, smooth transitions, and consistent design.
+ * Uses design tokens from theme.tcss for maintainability.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE (aligned with theme.tcss)
+ * ============================================================================ */
 $bg-base: #0d1b1e;
-$bg-panel: #13272b;
-$bg-accent: #1b343a;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+$bg-hover: #224650;
+$bg-active: #2a5360;
+
 $text-primary: #e6f1f2;
-$text-muted: #a7b6b9;
-$accent-cyan: #6bd9e3;
-$accent-amber: #ffb347;
-$accent-green: #6fdc8c;
-$accent-red: #ff6b6b;
+$text-secondary: #b8c9cc;
+$text-muted: #8a9ea2;
+
+$accent-primary: #6bd9e3;
+$accent-secondary: #ffb347;
+$accent-tertiary: #a78bfa;
+
+$color-success: #6fdc8c;
+$color-warning: #ffb347;
+$color-error: #ff6b6b;
+$color-info: #6bd9e3;
+
+$border-subtle: #1b343a;
+$border-default: #2a5360;
+$border-focus: #6bd9e3;
+
+/* Transitions */
+$transition-fast: 150ms;
+$transition-base: 250ms;
+$transition-slow: 350ms;
+
+/* ============================================================================
+ * GLOBAL STYLES
+ * ============================================================================ */
 
 Screen {
-    background: #0d1b1e;
+    background: $bg-base;
     color: $text-primary;
 }
 
 CommandPromptScreen {
-    background: rgba(13, 27, 30, 0.8);
+    background: rgba(13, 27, 30, 0.85);
 }
 
-Header, Footer {
-    background: $bg-panel;
+Header {
+    background: $bg-surface;
     color: $text-primary;
+    border-bottom: solid $border-subtle;
 }
+
+Footer {
+    background: $bg-surface;
+    color: $text-secondary;
+    border-top: solid $border-subtle;
+}
+
+/* ============================================================================
+ * DASHBOARD STYLES
+ * ============================================================================ */
 
 #dashboard {
     layout: vertical;
@@ -29,17 +72,24 @@ Header, Footer {
 }
 
 .dashboard-summary {
-    background: $bg-panel;
-    border: tall $bg-accent;
+    background: $bg-surface;
+    border: tall $border-default;
     padding: 1 2;
     margin-bottom: 1;
     color: $text-primary;
     text-style: bold;
-    transition: background 300ms, color 300ms;
+    transition: background $transition-base, 
+                border $transition-base,
+                color $transition-base;
+}
+
+.dashboard-summary:hover {
+    background: $bg-hover;
+    border: tall $accent-primary;
 }
 
 .highlight {
-    color: $accent-cyan;
+    color: $accent-primary;
     text-style: bold;
 }
 
@@ -47,32 +97,53 @@ Header, Footer {
     layout: horizontal;
 }
 
+/* ============================================================================
+ * PANEL COMPONENTS
+ * ============================================================================ */
+
 .quick-actions {
     width: 28%;
     min-height: 8;
-    background: $bg-panel;
-    border: tall $accent-amber;
+    background: $bg-surface;
+    border: tall $accent-secondary;
     padding: 1 2;
     color: $text-primary;
-    transition: background 300ms, color 300ms;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+.quick-actions:hover {
+    background: $bg-hover;
+    border: tall $color-warning;
 }
 
 .quick-actions Button {
     margin-top: 1;
+    transition: background $transition-fast;
+}
+
+.quick-actions Button:hover {
+    background: $bg-active;
 }
 
 #command-list Button {
     margin-top: 1;
+    transition: background $transition-fast;
 }
 
 .session-panel {
     width: 72%;
     min-height: 8;
-    background: $bg-panel;
-    border: tall $accent-cyan;
+    background: $bg-surface;
+    border: tall $accent-primary;
     padding: 1 2;
     color: $text-primary;
-    transition: background 300ms, color 300ms;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+.session-panel:hover {
+    background: $bg-hover;
 }
 
 .status-list {
@@ -87,44 +158,52 @@ Header, Footer {
 .command-prompt {
     width: 28%;
     min-height: 8;
-    background: $bg-panel;
-    border: tall $accent-cyan;
+    background: $bg-surface;
+    border: tall $accent-primary;
     padding: 1 2;
     color: $text-primary;
-    transition: background 300ms, color 300ms;
+    transition: background $transition-base,
+                border $transition-base;
 }
 
+/* ============================================================================
+ * MODAL COMPONENTS
+ * ============================================================================ */
+
 .command-modal {
-    background: $bg-panel;
-    border: tall $accent-cyan;
+    background: $bg-surface;
+    border: tall $accent-primary;
     padding: 2 3;
     width: 60%;
     height: 60%;
     align: center middle;
+    transition: background $transition-slow;
 }
 
 .modal-title {
     text-style: bold;
-    color: $accent-cyan;
+    color: $accent-primary;
     margin-bottom: 1;
 }
 
 .config-prompt {
-    background: $bg-panel;
-    border: tall $accent-amber;
+    background: $bg-surface;
+    border: tall $accent-secondary;
     padding: 2 3;
     width: 60%;
     height: 40%;
     align: center middle;
+    transition: background $transition-slow;
 }
 
 .config-builder {
-    background: $bg-panel;
-    border: tall $accent-cyan;
+    background: $bg-surface;
+    border: tall $accent-primary;
     padding: 2 3;
     width: 70%;
     height: 70%;
     align: center middle;
+    transition: background $transition-slow;
 }
 
 .modal-actions {
@@ -133,9 +212,14 @@ Header, Footer {
 }
 
 .modal-error {
-    color: $accent-red;
+    color: $color-error;
     margin-top: 1;
+    text-style: bold;
 }
+
+/* ============================================================================
+ * FORM COMPONENTS
+ * ============================================================================ */
 
 .form-row {
     layout: vertical;
@@ -144,21 +228,34 @@ Header, Footer {
 
 #server-list {
     height: 6;
-    border: tall $bg-accent;
+    border: tall $border-default;
     padding: 1 1;
+    background: $bg-base;
+    transition: border $transition-fast;
+}
+
+#server-list:focus {
+    border: tall $border-focus;
 }
 
 .modal-section {
     text-style: bold;
-    color: $accent-amber;
+    color: $accent-secondary;
     margin-top: 1;
 }
 
 #command-input {
-    border: tall $bg-accent;
+    border: tall $border-default;
     background: $bg-base;
     color: $text-primary;
     margin-top: 1;
+    transition: border $transition-fast,
+                background $transition-fast;
+}
+
+#command-input:focus {
+    border: tall $border-focus;
+    background: $bg-elevated;
 }
 
 #command-output {
@@ -166,34 +263,224 @@ Header, Footer {
     color: $text-muted;
 }
 
+/* ============================================================================
+ * SERVER STATUS CARDS
+ * ============================================================================ */
+
 .status-card {
-    background: $bg-panel;
-    border: tall $bg-accent;
+    background: $bg-surface;
+    border: tall $border-default;
     padding: 1 2;
-    transition: background 250ms, color 250ms;
+    transition: background $transition-base, 
+                border $transition-base,
+                color $transition-base;
 }
 
 .status-card.connected {
-    border: tall $accent-green;
+    border: tall $color-success;
 }
 
 .status-card.disconnected {
-    border: tall $accent-red;
+    border: tall $color-error;
 }
 
 .status-card:hover {
-    background: $bg-accent;
+    background: $bg-hover;
+    border: tall $accent-primary;
+}
+
+.status-card:focus {
+    border: heavy $border-focus;
 }
 
 ServerStatusCard {
     color: $text-primary;
 }
 
+/* ============================================================================
+ * COMPONENT-SPECIFIC STYLES
+ * ============================================================================ */
+
 DashboardSummary {
     text-style: bold;
+    transition: color $transition-base;
 }
 
 QuickActionsMenu, SessionDetailsPanel, DashboardSummary {
     color: $text-primary;
 }
 
+/* ============================================================================
+ * BUTTON STYLES
+ * ============================================================================ */
+
+Button {
+    background: $bg-elevated;
+    color: $text-primary;
+    border: solid $border-default;
+    transition: background $transition-fast,
+                border $transition-fast,
+                color $transition-fast;
+}
+
+Button:hover {
+    background: $bg-active;
+    border: solid $accent-primary;
+    color: $accent-primary;
+}
+
+Button:focus {
+    border: heavy $border-focus;
+}
+
+Button.-primary {
+    background: $accent-primary;
+    color: $bg-base;
+    border: solid $accent-primary;
+}
+
+Button.-primary:hover {
+    background: #7fe3ed;
+    border: solid #7fe3ed;
+}
+
+Button.-success {
+    background: $color-success;
+    color: $bg-base;
+    border: solid $color-success;
+}
+
+Button.-success:hover {
+    background: #80e49d;
+    border: solid #80e49d;
+}
+
+Button.-danger {
+    background: $color-error;
+    color: $text-primary;
+    border: solid $color-error;
+}
+
+Button.-danger:hover {
+    background: #ff7f7f;
+    border: solid #ff7f7f;
+}
+
+/* ============================================================================
+ * INPUT STYLES
+ * ============================================================================ */
+
+Input {
+    background: $bg-surface;
+    color: $text-primary;
+    border: solid $border-default;
+    transition: background $transition-fast,
+                border $transition-fast;
+}
+
+Input:focus {
+    background: $bg-elevated;
+    border: solid $border-focus;
+}
+
+Input.-invalid {
+    border: solid $color-error;
+}
+
+/* ============================================================================
+ * LIST STYLES
+ * ============================================================================ */
+
+ListView {
+    background: transparent;
+    border: none;
+}
+
+ListItem {
+    padding: 0 1;
+    color: $text-primary;
+    transition: background $transition-fast,
+                color $transition-fast;
+}
+
+ListItem:hover {
+    background: $bg-hover;
+}
+
+ListItem.-selected {
+    background: $accent-primary;
+    color: $bg-base;
+    text-style: bold;
+}
+
+ListItem:focus {
+    background: $bg-active;
+}
+
+/* ============================================================================
+ * CONTAINER STYLES
+ * ============================================================================ */
+
+Container {
+    background: transparent;
+}
+
+Vertical, Horizontal {
+    background: transparent;
+}
+
+/* ============================================================================
+ * SCROLLBAR STYLES
+ * ============================================================================ */
+
+Vertical:focus-within > ScrollableContainer > VerticalScroll {
+    background: $bg-elevated;
+}
+
+Horizontal:focus-within > ScrollableContainer > HorizontalScroll {
+    background: $bg-elevated;
+}
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================ */
+
+.text-success {
+    color: $color-success;
+}
+
+.text-warning {
+    color: $color-warning;
+}
+
+.text-error {
+    color: $color-error;
+}
+
+.text-info {
+    color: $color-info;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.text-bold {
+    text-style: bold;
+}
+
+.border-primary {
+    border: solid $accent-primary;
+}
+
+.border-success {
+    border: solid $color-success;
+}
+
+.border-error {
+    border: solid $color-error;
+}
+
+/* ============================================================================
+ * END PLEXIGLASS STYLES
+ * ============================================================================ */

@@ -1,0 +1,253 @@
+/*
+ * Help Screen Styles
+ *
+ * Styling for the help system with searchable content and topic navigation.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE
+ * ============================================================================ */
+$bg-base: #0d1b1e;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+$bg-hover: #224650;
+
+$text-primary: #e6f1f2;
+$text-secondary: #b8c9cc;
+$text-muted: #8a9ea2;
+
+$accent-primary: #6bd9e3;
+$accent-secondary: #ffb347;
+
+$border-subtle: #1b343a;
+$border-default: #2a5360;
+$border-focus: #6bd9e3;
+
+$transition-fast: 150ms;
+$transition-base: 250ms;
+
+/* ============================================================================
+ * HELP SCREEN CONTAINER
+ * ============================================================================ */
+
+HelpScreen {
+    background: $bg-base;
+    color: $text-primary;
+}
+
+HelpScreen Header {
+    background: $bg-surface;
+    border-bottom: solid $border-default;
+    padding: 1 2;
+}
+
+HelpScreen Header .header--title {
+    color: $accent-primary;
+    text-style: bold;
+}
+
+HelpScreen Footer {
+    background: $bg-surface;
+    border-top: solid $border-default;
+    color: $text-secondary;
+}
+
+/* ============================================================================
+ * HELP CONTENT LAYOUT
+ * ============================================================================ */
+
+#help-container {
+    layout: horizontal;
+    height: 1fr;
+    padding: 1;
+}
+
+/* ============================================================================
+ * TOPIC LIST (Left Sidebar)
+ * ============================================================================ */
+
+#topic-list {
+    width: 30;
+    background: $bg-surface;
+    border: solid $accent-primary;
+    padding: 1;
+    margin-right: 1;
+    transition: background $transition-base,
+                border $transition-base;
+}
+
+#topic-list:hover {
+    background: $bg-hover;
+}
+
+#topic-list:focus {
+    border: heavy $border-focus;
+    background: $bg-elevated;
+}
+
+#topic-list ListItem {
+    padding: 1 2;
+    color: $text-primary;
+    transition: background $transition-fast,
+                color $transition-fast;
+}
+
+#topic-list ListItem:hover {
+    background: $bg-hover;
+    color: $accent-primary;
+}
+
+#topic-list ListItem.-selected {
+    background: $accent-primary;
+    color: $bg-base;
+    text-style: bold;
+}
+
+/* ============================================================================
+ * CONTENT DISPLAY (Right Panel)
+ * ============================================================================ */
+
+#help-content {
+    width: 1fr;
+    background: $bg-surface;
+    border: solid $accent-secondary;
+    padding: 2;
+    transition: background $transition-base;
+}
+
+#help-content:hover {
+    background: $bg-hover;
+}
+
+.help-title {
+    color: $accent-secondary;
+    text-style: bold;
+    margin-bottom: 2;
+    border-bottom: solid $border-default;
+    padding-bottom: 1;
+}
+
+.help-section {
+    margin: 2 0;
+    padding: 1;
+    background: $bg-elevated;
+    border-left: solid $accent-primary;
+    padding-left: 2;
+}
+
+.help-section-title {
+    color: $accent-primary;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.help-text {
+    color: $text-primary;
+    margin: 1 0;
+    line-height: 1.5;
+}
+
+.help-code {
+    background: $bg-base;
+    color: $accent-secondary;
+    padding: 1;
+    margin: 1 0;
+    border: solid $border-subtle;
+}
+
+.help-list {
+    margin: 1 0 1 2;
+}
+
+.help-list-item {
+    color: $text-primary;
+    margin: 0.5 0;
+}
+
+.help-list-item::before {
+    content: "•";
+    color: $accent-primary;
+    padding-right: 1;
+}
+
+/* ============================================================================
+ * SEARCH BAR
+ * ============================================================================ */
+
+#help-search {
+    width: 100%;
+    background: $bg-base;
+    border: solid $border-default;
+    color: $text-primary;
+    padding: 0 1;
+    margin-bottom: 1;
+    transition: background $transition-fast,
+                border $transition-fast;
+}
+
+#help-search:focus {
+    background: $bg-elevated;
+    border: solid $border-focus;
+}
+
+/* ============================================================================
+ * KEYBOARD SHORTCUTS TABLE
+ * ============================================================================ */
+
+.shortcuts-table {
+    margin: 2 0;
+    background: $bg-elevated;
+    border: solid $border-default;
+    padding: 1;
+}
+
+.shortcut-row {
+    padding: 0.5 1;
+    transition: background $transition-fast;
+}
+
+.shortcut-row:hover {
+    background: $bg-hover;
+}
+
+.shortcut-key {
+    color: $accent-primary;
+    text-style: bold;
+    padding: 0 1;
+    background: $bg-base;
+    border: solid $border-subtle;
+}
+
+.shortcut-description {
+    color: $text-secondary;
+    padding-left: 2;
+}
+
+/* ============================================================================
+ * EMPTY STATE
+ * ============================================================================ */
+
+.help-empty {
+    color: $text-muted;
+    text-align: center;
+    padding: 4;
+    background: $bg-elevated;
+}
+
+/* ============================================================================
+ * SCROLLBAR
+ * ============================================================================ */
+
+#help-content:focus-within {
+    scrollbar-background: $bg-elevated;
+    scrollbar-color: $accent-secondary;
+}
+
+#topic-list:focus-within {
+    scrollbar-background: $bg-elevated;
+    scrollbar-color: $accent-primary;
+}
+
+/* ============================================================================
+ * END HELP SCREEN STYLES
+ * ============================================================================ */

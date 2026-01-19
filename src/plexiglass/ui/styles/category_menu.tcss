@@ -1,34 +1,153 @@
-/* Category Menu Styles */
+/*
+ * Category Menu Widget Styles
+ *
+ * Enhanced styling for the gallery category navigation menu with
+ * smooth transitions and clear visual hierarchy.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE
+ * ============================================================================ */
+$bg-base: #0d1b1e;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+$bg-hover: #224650;
+$bg-active: #2a5360;
+
+$text-primary: #e6f1f2;
+$text-secondary: #b8c9cc;
+$text-muted: #8a9ea2;
+
+$accent-primary: #6bd9e3;
+$accent-tertiary: #a78bfa;
+
+$border-subtle: #1b343a;
+$border-default: #2a5360;
+$border-focus: #6bd9e3;
+
+$transition-fast: 150ms;
+$transition-base: 250ms;
+
+/* ============================================================================
+ * CATEGORY MENU CONTAINER
+ * ============================================================================ */
 
 CategoryMenu {
-    border: round $primary;
-    background: $panel;
+    border: round $accent-tertiary;
+    background: $bg-surface;
     padding: 1;
     width: 30;
     height: 100%;
+    transition: background $transition-base,
+                border $transition-base;
 }
+
+CategoryMenu:hover {
+    background: $bg-hover;
+}
+
+CategoryMenu:focus {
+    border: heavy $border-focus;
+    background: $bg-elevated;
+}
+
+/* ============================================================================
+ * LIST VIEW
+ * ============================================================================ */
 
 CategoryMenu > ListView {
     background: transparent;
     border: none;
+    padding: 0;
 }
 
+/* ============================================================================
+ * LIST ITEMS
+ * ============================================================================ */
+
 CategoryMenu > ListView > ListItem {
-    padding: 0 1;
+    padding: 1 2;
     height: auto;
+    color: $text-primary;
+    transition: background $transition-fast,
+                color $transition-fast,
+                border $transition-fast;
+    border-left: solid $bg-surface;
 }
 
 CategoryMenu > ListView > ListItem:hover {
-    background: $primary-darken-2;
+    background: $bg-hover;
+    color: $accent-tertiary;
+    border-left: solid $accent-tertiary;
 }
 
 CategoryMenu > ListView > ListItem.-selected {
-    background: $primary;
-    color: $text;
+    background: $accent-tertiary;
+    color: $bg-base;
+    text-style: bold;
+    border-left: heavy $accent-tertiary;
 }
+
+CategoryMenu > ListView > ListItem:focus {
+    background: $bg-active;
+    border: solid $border-focus;
+}
+
+/* ============================================================================
+ * CATEGORY LABELS
+ * ============================================================================ */
 
 CategoryMenu Label {
     color: $text-muted;
     text-align: center;
-    padding: 2;
+    padding: 2 1;
+    text-style: bold;
+    background: $bg-elevated;
+    transition: color $transition-base;
 }
+
+CategoryMenu Label:hover {
+    color: $text-primary;
+}
+
+/* ============================================================================
+ * CATEGORY ICONS (if using emoji or symbols)
+ * ============================================================================ */
+
+.category-icon {
+    color: $accent-tertiary;
+    padding-right: 1;
+}
+
+.category-title {
+    color: $text-primary;
+}
+
+.category-count {
+    color: $text-muted;
+    padding-left: 1;
+}
+
+/* ============================================================================
+ * EMPTY STATE
+ * ============================================================================ */
+
+CategoryMenu .empty-message {
+    color: $text-muted;
+    text-align: center;
+    padding: 4 2;
+    background: $bg-elevated;
+}
+
+/* ============================================================================
+ * SCROLLBAR
+ * ============================================================================ */
+
+CategoryMenu:focus-within {
+    scrollbar-background: $bg-elevated;
+    scrollbar-color: $accent-tertiary;
+}
+
+/* ============================================================================
+ * END CATEGORY MENU STYLES
+ * ============================================================================ */

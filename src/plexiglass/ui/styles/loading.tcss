@@ -1,0 +1,189 @@
+/*
+ * Loading & Progress Widget Styles
+ *
+ * Styling for loading indicators and progress bars with smooth animations.
+ */
+
+/* ============================================================================
+ * COLOR PALETTE
+ * ============================================================================ */
+$bg-base: #0d1b1e;
+$bg-surface: #13272b;
+$bg-elevated: #1b343a;
+
+$text-primary: #e6f1f2;
+$text-muted: #8a9ea2;
+
+$accent-primary: #6bd9e3;
+$accent-secondary: #ffb347;
+
+$border-default: #2a5360;
+
+$transition-base: 250ms;
+$transition-slow: 350ms;
+
+/* ============================================================================
+ * LOADING INDICATOR
+ * ============================================================================ */
+
+LoadingIndicator {
+    width: auto;
+    height: auto;
+    padding: 2;
+    background: $bg-surface;
+    border: solid $accent-secondary;
+    color: $accent-secondary;
+    text-align: center;
+    transition: background $transition-base;
+}
+
+LoadingIndicator:hover {
+    background: $bg-elevated;
+}
+
+.loading-spinner {
+    color: $accent-secondary;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.loading-message {
+    color: $text-primary;
+    margin-top: 1;
+}
+
+/* Spinner animation frames (using changing symbols) */
+.spinner-frame-0::before {
+    content: "⠋";
+}
+
+.spinner-frame-1::before {
+    content: "⠙";
+}
+
+.spinner-frame-2::before {
+    content: "⠹";
+}
+
+.spinner-frame-3::before {
+    content: "⠸";
+}
+
+.spinner-frame-4::before {
+    content: "⠼";
+}
+
+.spinner-frame-5::before {
+    content: "⠴";
+}
+
+.spinner-frame-6::before {
+    content: "⠦";
+}
+
+.spinner-frame-7::before {
+    content: "⠧";
+}
+
+.spinner-frame-8::before {
+    content: "⠇";
+}
+
+.spinner-frame-9::before {
+    content: "⠏";
+}
+
+/* ============================================================================
+ * PROGRESS BAR
+ * ============================================================================ */
+
+ProgressBar {
+    width: 100%;
+    height: 3;
+    background: $bg-surface;
+    border: solid $border-default;
+    margin: 1 0;
+    transition: background $transition-base;
+}
+
+ProgressBar:hover {
+    background: $bg-elevated;
+}
+
+.progress-container {
+    width: 100%;
+    height: 1;
+    background: $bg-elevated;
+    border: solid $border-default;
+}
+
+.progress-fill {
+    height: 1;
+    background: $accent-primary;
+    transition: width $transition-slow;
+}
+
+.progress-fill.-success {
+    background: #6fdc8c;
+}
+
+.progress-fill.-warning {
+    background: $accent-secondary;
+}
+
+.progress-fill.-error {
+    background: #ff6b6b;
+}
+
+.progress-label {
+    color: $text-primary;
+    text-align: center;
+    margin-top: 1;
+}
+
+.progress-percentage {
+    color: $accent-primary;
+    text-style: bold;
+}
+
+/* ============================================================================
+ * INDETERMINATE LOADING BAR
+ * ============================================================================ */
+
+.indeterminate-bar {
+    width: 100%;
+    height: 1;
+    background: $bg-surface;
+    overflow: hidden;
+}
+
+.indeterminate-fill {
+    height: 1;
+    width: 30%;
+    background: $accent-primary;
+    /* Textual doesn't support CSS animations, 
+       but this provides the base style */
+}
+
+/* ============================================================================
+ * LOADING OVERLAY
+ * ============================================================================ */
+
+.loading-overlay {
+    background: rgba(13, 27, 30, 0.9);
+    align: center middle;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-content {
+    background: $bg-surface;
+    border: solid $accent-primary;
+    padding: 3 4;
+    width: auto;
+    height: auto;
+}
+
+/* ============================================================================
+ * END LOADING & PROGRESS STYLES
+ * ============================================================================ */
