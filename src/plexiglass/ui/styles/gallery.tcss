@@ -54,7 +54,12 @@
     margin: 0 0 1 0;
 }
 
-.results-display {
+#demo-params {
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+#results-display {
     height: 1fr;
     margin: 0 0 1 0;
 }

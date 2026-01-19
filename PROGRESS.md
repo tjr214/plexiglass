@@ -1,7 +1,7 @@
 # PlexiGlass - Development Progress
 
 **Project**: PlexiGlass - A Colorful Textual TUI Dashboard & API Gallery for Plex Media Servers  
-**Last Updated**: January 18, 2026  
+**Last Updated**: January 19, 2026  
 **Current Phase**: Phase 3 Implementation - Sprint 4 Next  
 **Overall Status**: ✅ Gallery Foundation 100% Complete
 
@@ -136,6 +136,7 @@
 - [x] Code viewer widget complete (TDD + integration tests)
 - [x] Results display widget complete (TDD + integration tests)
 - [x] Gallery integration tests (flow wiring)
+- [x] Gallery parameters panel + scrollable results
 
 ### ✅ Sprint 4: Undo System (COMPLETE)
 

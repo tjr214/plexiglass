@@ -72,7 +72,10 @@ class DemoList(VerticalScroll):
         """Update the demos displayed in the list."""
         self._demos = demos
         self._demo_map = {}
-        list_view = self.query_one(ListView)
+        try:
+            list_view = self.query_one(ListView)
+        except Exception:
+            return
         list_view.clear()
 
         if not demos:

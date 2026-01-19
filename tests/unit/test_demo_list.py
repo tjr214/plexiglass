@@ -4,6 +4,8 @@ Tests for DemoList widget.
 
 from __future__ import annotations
 
+import pytest
+
 from plexiglass.gallery.base_demo import BaseDemo
 from plexiglass.ui.widgets.demo_list import DemoList
 
@@ -29,4 +31,18 @@ class TestDemoList:
         demo_list = DemoList([])
         demo_list.update_demos([SampleDemo()])
 
-        assert demo_list._demo_map[0].name == "Sample Demo"
+        assert demo_list._demo_map == {}
+
+    @pytest.mark.asyncio
+    async def test_demo_list_updates_demos_when_mounted(self):
+        from textual.app import App
+
+        class TestApp(App):
+            def compose(self):
+                yield DemoList([], id="demo-list")
+
+        app = TestApp()
+        async with app.run_test() as pilot:
+            demo_list = pilot.app.query_one("#demo-list", DemoList)
+            demo_list.update_demos([SampleDemo()])
+            assert demo_list._demo_map[0].name == "Sample Demo"

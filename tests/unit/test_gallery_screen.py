@@ -150,9 +150,11 @@ class TestGalleryScreenLayout:
             screen = GalleryScreen(demo_registry)
             await pilot.app.push_screen(screen)
 
-            # Look for category list widget
-            category_list = screen.query_one("#category-list", Static)
-            assert category_list is not None
+            # Look for category menu widget
+            from plexiglass.ui.widgets.category_menu import CategoryMenu
+
+            category_menu = screen.query_one("#category-menu", CategoryMenu)
+            assert category_menu is not None
 
     @pytest.mark.asyncio
     async def test_gallery_screen_has_demo_panel(self, demo_registry):

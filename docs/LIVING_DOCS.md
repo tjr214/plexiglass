@@ -2,7 +2,7 @@
 
 **Project**: PlexiGlass  
 **Version**: 0.1.0  
-**Last Updated**: 2026-01-18  
+**Last Updated**: 2026-01-19  
 **Status**: Sprint 3 Gallery Foundation Complete ✅ (100%)
 
 ---
@@ -46,6 +46,8 @@ PlexiGlass provides transparency and clarity (like glass) into your Plex infrast
 - **Hierarchical Navigation**: Organized menu system
 - **Code Examples**: See the actual python-plexapi code
 - **Live Results**: Real data from your selected server
+- **Parameters Panel**: Auto-filled inputs for required demo params
+- **Scrollable Results**: Long outputs are scrollable
 
 ### 3. Safety Features
 

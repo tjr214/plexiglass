@@ -6,7 +6,7 @@ The ResultsDisplay shows formatted demo execution output.
 
 from __future__ import annotations
 
-from plexiglass.ui.widgets.results_display import ResultsDisplay
+from plexiglass.ui.widgets.scrollable_results import ScrollableResults
 
 
 class TestResultsDisplay:
@@ -14,29 +14,26 @@ class TestResultsDisplay:
 
     def test_results_display_initial_state(self):
         """ResultsDisplay shows placeholder when no results set."""
-        display = ResultsDisplay()
+        display = ScrollableResults()
 
-        assert display.results is None
-        assert display.render() == "Run a demo to see results"
+        assert display.get_rendered() == "Run a demo to see results"
 
     def test_results_display_set_results_updates_render(self):
         """Setting results renders a formatted string."""
-        display = ResultsDisplay()
+        display = ScrollableResults()
         results = {"status": "success", "items": ["a", "b"]}
 
         display.set_results(results)
-        rendered = display.render()
+        rendered = display.get_rendered()
 
-        assert display.results == results
         assert isinstance(rendered, str)
         assert "status" in rendered
         assert "success" in rendered
 
     def test_results_display_clear_results_resets_placeholder(self):
         """Clearing results resets placeholder text."""
-        display = ResultsDisplay()
+        display = ScrollableResults()
         display.set_results({"status": "ok"})
         display.set_results(None)
 
-        assert display.results is None
-        assert display.render() == "Run a demo to see results"
+        assert display.get_rendered() == "Run a demo to see results"
