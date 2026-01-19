@@ -3,7 +3,7 @@
 **Project**: PlexiGlass - A Colorful Textual TUI Dashboard & API Gallery for Plex Media Servers  
 **Last Updated**: January 18, 2026  
 **Current Phase**: Phase 3 Implementation - Sprint 3 In Progress  
-**Overall Status**: 🔄 Gallery Foundation 75% Complete
+**Overall Status**: 🔄 Gallery Foundation 85% Complete
 
 ---
 
@@ -123,17 +123,17 @@
 - [x] Edit config flow (reuse builder + load existing config)
 - [x] Dashboard CSS layout and theming
 
-### 🔄 Sprint 3: Gallery Foundation (IN PROGRESS - 75%)
+### 🔄 Sprint 3: Gallery Foundation (IN PROGRESS - 85%)
 
 - [x] Base demo class implementation (TDD complete - 8 tests)
 - [x] Demo registry system (TDD complete - 9 tests)
 - [x] Sample demo - GetServerInfoDemo (TDD complete - 14 tests, 90% coverage)
 - [x] Demo registration integration testing (6 tests, validated)
 - [x] Full TDD Red-Green-Refactor cycle demonstrated
-- [x] Gallery screen layout (TDD complete - 15 tests, 93% coverage) - **JUST COMPLETED**
+- [x] Gallery screen layout (TDD complete - 15 tests, 93% coverage)
 - [x] Gallery screen CSS styling
-- [ ] Category menu navigation widget - NEXT
-- [ ] Code viewer widget
+- [x] **Category menu navigation widget (TDD complete - 18 tests, 90% coverage)** - **JUST COMPLETED**
+- [ ] Code viewer widget - NEXT
 - [ ] Results display widget
 - [ ] Gallery integration tests
 
@@ -220,10 +220,10 @@ plexiglass/
 **Current Status**: ✅ All Tests Passing
 
 ```
-Tests: 120 passed, 1 skipped (up from 105, +15 new tests)
+Tests: 138 passed, 1 skipped (up from 120, +18 new tests)
 Coverage: 79% (up from 78%)
-New Tests: Gallery Screen (15 tests, 93% coverage)
-Sprint 3 Progress: 75% (up from 55%)
+New Tests: CategoryMenu Widget (18 tests, 90% coverage)
+Sprint 3 Progress: 85% (up from 75%)
 ```
 
 **Test Command**:
@@ -302,14 +302,15 @@ Ask the assistant:
 - ✅ **2026-01-16**: Project initialized and planning complete
 - ✅ **2026-01-17**: Sprint 1 foundation delivered
 - ✅ **2026-01-17**: Sprint 2 dashboard mode delivered
-- 🔄 **2026-01-18**: Sprint 3 gallery foundation started (75% complete)
+- 🔄 **2026-01-18**: Sprint 3 gallery foundation started (85% complete)
   - ✅ Base demo & registry system complete
   - ✅ Sample demo (GetServerInfoDemo) complete
-  - ✅ **Gallery Screen layout complete** (15 tests, 93% coverage)
+  - ✅ Gallery Screen layout complete (15 tests, 93% coverage)
   - ✅ Gallery CSS styling complete
+  - ✅ **CategoryMenu widget complete** (18 tests, 90% coverage)
 
 ---
 
-**Status**: 🔄 **SPRINT 3 IN PROGRESS (75%)**
+**Status**: 🔄 **SPRINT 3 IN PROGRESS (85%)**
 
-_Last Context Window: Session 3 - Gallery Screen Layout Complete_
+_Last Context Window: Session 4 - CategoryMenu Widget Complete_

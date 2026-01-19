@@ -1,0 +1,34 @@
+/* Category Menu Styles */
+
+CategoryMenu {
+    border: round $primary;
+    background: $panel;
+    padding: 1;
+    width: 30;
+    height: 100%;
+}
+
+CategoryMenu > ListView {
+    background: transparent;
+    border: none;
+}
+
+CategoryMenu > ListView > ListItem {
+    padding: 0 1;
+    height: auto;
+}
+
+CategoryMenu > ListView > ListItem:hover {
+    background: $primary-darken-2;
+}
+
+CategoryMenu > ListView > ListItem.-selected {
+    background: $primary;
+    color: $text;
+}
+
+CategoryMenu Label {
+    color: $text-muted;
+    text-align: center;
+    padding: 2;
+}
