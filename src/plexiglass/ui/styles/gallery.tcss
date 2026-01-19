@@ -39,6 +39,11 @@
 
 .code-viewer {
     height: 1fr;
+    margin: 0 0 1 0;
+}
+
+.results-display {
+    height: 1fr;
 }
 
 #demo-panel:focus {

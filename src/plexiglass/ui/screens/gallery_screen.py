@@ -16,6 +16,7 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
 from plexiglass.ui.widgets.code_viewer import CodeViewer
+from plexiglass.ui.widgets.results_display import ResultsDisplay
 
 if TYPE_CHECKING:
     from plexiglass.gallery.base_demo import BaseDemo
@@ -168,6 +169,7 @@ class GalleryScreen(Screen):
             with Vertical(id="demo-panel"):
                 yield DemoPanel(id="demo-summary")
                 yield CodeViewer(id="code-viewer")
+                yield ResultsDisplay(id="results-display")
 
         yield Footer()
 

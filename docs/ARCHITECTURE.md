@@ -274,7 +274,7 @@ PlexiGlassApp
 1. **ServerCard**: Displays server status with metrics
 2. **CategoryMenu**: Hierarchical menu for gallery navigation (implemented)
 3. **CodeViewer**: Syntax-highlighted code display (implemented)
-4. **DemoResults**: Pretty-printed API results
+4. **DemoResults**: Pretty-printed API results (implemented)
 5. **UndoButton**: Contextual undo button with state
 
 ### CSS Theming
@@ -403,7 +403,7 @@ class Settings:
 ### Test Coverage Goals
 
 - **Unit Tests**: 80%+ coverage
-- **Integration Tests**: Key workflows
+- **Integration Tests**: Key workflows (gallery flow covered)
 - **UI Tests**: Textual's testing framework
 
 ### Example Test Structure
