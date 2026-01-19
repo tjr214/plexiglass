@@ -363,8 +363,8 @@ undo_service.undo()  # Restores "Old Title"
 #### Sprint 5: Gallery Demos (15 sprints - one per category)
 - [x] Server & Connection demos (starter set)
 - [x] Library Management demos (starter set)
-- [ ] Media Operations demos (Movies, TV, Music, Photos)
-- [ ] Playback & Clients demos
+- [x] Media Operations demos (starter set)
+- [x] Playback & Clients demos (starter set)
 - [ ] Collections & Playlists demos
 - [ ] Users & Sharing demos
 - [ ] MyPlex Account demos

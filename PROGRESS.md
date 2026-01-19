@@ -150,8 +150,8 @@
 
 - [x] Server & Connection demos (starter set)
 - [x] Library Management demos (starter set)
-- [ ] Media Operations demos
-- [ ] Playback & Clients demos
+- [x] Media Operations demos (starter set)
+- [x] Playback & Clients demos (starter set)
 - [ ] Collections & Playlists demos
 - [ ] Users & Sharing demos
 - [ ] MyPlex Account demos
