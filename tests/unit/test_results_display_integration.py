@@ -7,7 +7,7 @@ from __future__ import annotations
 import pytest
 from textual.app import App
 
-from plexiglass.ui.widgets.results_display import ResultsDisplay
+from plexiglass.ui.widgets.scrollable_results import ScrollableResults
 
 
 class TestResultsDisplayIntegration:
@@ -19,9 +19,9 @@ class TestResultsDisplayIntegration:
 
         class TestApp(App):
             def compose(self):
-                yield ResultsDisplay(id="results-display")
+                yield ScrollableResults(id="results-display")
 
         app = TestApp()
         async with app.run_test() as pilot:
-            display = pilot.app.query_one("#results-display", ResultsDisplay)
+            display = pilot.app.query_one("#results-display", ScrollableResults)
             assert display is not None

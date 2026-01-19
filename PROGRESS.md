@@ -284,7 +284,7 @@ uv sync --all-extras
 ### Review Documentation
 
 1. `PROGRESS.md` (this file)
-2. `docs/SESSION_X_SUMMARY.md` (latest one)
+2. `docs/SESSION_X_SUMMARY.md` (latest one; or however many are needed to get proper context)
 3. `docs/LIVING_DOCS.md`
 4. `docs/ARCHITECTURE.md`
 

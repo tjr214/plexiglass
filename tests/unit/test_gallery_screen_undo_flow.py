@@ -21,7 +21,7 @@ class TestGalleryScreenUndoFlow:
     @pytest.mark.asyncio
     async def test_undo_snapshot_enables_button_and_updates_results(self, demo_registry):
         from plexiglass.ui.screens.gallery_screen import GalleryScreen
-        from plexiglass.ui.widgets.results_display import ResultsDisplay
+        from plexiglass.ui.widgets.scrollable_results import ScrollableResults
         from plexiglass.ui.widgets.undo_button import UndoButton
 
         class TestApp(App):
@@ -42,7 +42,7 @@ class TestGalleryScreenUndoFlow:
             screen.perform_undo()
             await pilot.pause()
 
-            results_display = screen.query_one("#results-display", ResultsDisplay)
-            rendered = results_display.render()
+            results_display = screen.query_one("#results-display", ScrollableResults)
+            rendered = results_display.get_rendered()
             assert "undo_operation" in rendered
             assert "update" in rendered

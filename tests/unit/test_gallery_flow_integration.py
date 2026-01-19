@@ -40,7 +40,7 @@ class TestGalleryFlowIntegration:
     async def test_gallery_flow_updates_demo_and_code_viewer(self, demo_registry):
         from plexiglass.ui.screens.gallery_screen import DemoPanel, GalleryScreen
         from plexiglass.ui.widgets.code_viewer import CodeViewer
-        from plexiglass.ui.widgets.results_display import ResultsDisplay
+        from plexiglass.ui.widgets.scrollable_results import ScrollableResults
 
         class TestApp(App):
             def on_mount(self):
@@ -57,11 +57,11 @@ class TestGalleryFlowIntegration:
 
             demo_panel = screen.query_one("#demo-summary", DemoPanel)
             code_viewer = screen.query_one("#code-viewer", CodeViewer)
-            results_display = screen.query_one("#results-display", ResultsDisplay)
+            results_display = screen.query_one("#results-display", ScrollableResults)
 
             assert "Flow Demo" in demo_panel.render()
             assert code_viewer.code == "server.sessions()"
-            assert results_display.render() == "Run a demo to see results"
+            assert results_display.get_rendered() == "Run a demo to see results"
 
     @pytest.mark.asyncio
     async def test_gallery_flow_clears_demo_state(self, demo_registry):

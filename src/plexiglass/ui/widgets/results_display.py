@@ -20,7 +20,8 @@ class ResultsDisplay(Static):
         border: round $primary;
         background: $surface;
         padding: 1 2;
-        height: 1fr;
+        height: auto;
+        width: 100%;
     }
     """
 

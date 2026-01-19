@@ -1,5 +1,5 @@
 """
-Tests for running demos from GalleryScreen.
+Tests for run demo button press handler.
 """
 
 from __future__ import annotations
@@ -30,11 +30,12 @@ def demo_registry():
     return registry
 
 
-class TestGalleryRunDemo:
+class TestGalleryRunDemoButtonPress:
     @pytest.mark.asyncio
-    async def test_run_demo_updates_results(self, demo_registry):
+    async def test_run_demo_button_press_runs_demo(self, demo_registry):
         from plexiglass.ui.screens.gallery_screen import GalleryScreen
         from plexiglass.ui.widgets.scrollable_results import ScrollableResults
+        from plexiglass.ui.widgets.run_demo_button import RunDemoButton
 
         class TestApp(App):
             def on_mount(self):
@@ -49,8 +50,11 @@ class TestGalleryRunDemo:
             screen = GalleryScreen(demo_registry)
             await pilot.app.push_screen(screen)
             screen.selected_demo = demo_registry.get_demo_by_name("Run Demo")
-            screen.action_run_demo()
+
+            run_button = screen.query_one("#run-demo", RunDemoButton)
+            run_button.press()
+            await pilot.pause()
 
             results_display = screen.query_one("#results-display", ScrollableResults)
             rendered = results_display.get_rendered()
-            assert rendered == "{'status': 'ok'}" or "status" in str(rendered)
+            assert "status" in rendered

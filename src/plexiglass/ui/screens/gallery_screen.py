@@ -13,14 +13,15 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Static
+from textual.widgets import Button, Footer, Header, Static
 
 from plexiglass.services.undo_service import UndoService
 from plexiglass.services.exceptions import ConnectionError
 from plexiglass.ui.widgets.category_menu import CategoryMenu
 from plexiglass.ui.widgets.code_viewer import CodeViewer
 from plexiglass.ui.widgets.demo_list import DemoList
-from plexiglass.ui.widgets.results_display import ResultsDisplay
+from plexiglass.ui.widgets.demo_parameters import DemoParameters
+from plexiglass.ui.widgets.scrollable_results import ScrollableResults
 from plexiglass.ui.widgets.run_demo_button import RunDemoButton
 from plexiglass.ui.widgets.undo_button import UndoButton
 
@@ -76,14 +77,6 @@ class GalleryScreen(Screen):
     - Results display
     """
 
-    BINDINGS = [
-        ("escape", "dismiss", "Back to Dashboard"),
-        ("q", "dismiss", "Quit Gallery"),
-        ("tab", "focus_next", "Next Panel"),
-        ("shift+tab", "focus_previous", "Prev Panel"),
-        ("r", "run_demo", "Run Demo"),
-    ]
-
     TITLE = "PlexiGlass API Gallery"
     CSS_PATH = "../styles/gallery.tcss"
     BINDINGS = [
@@ -91,6 +84,7 @@ class GalleryScreen(Screen):
         ("q", "dismiss", "Quit Gallery"),
         ("tab", "focus_next", "Next Panel"),
         ("shift+tab", "focus_previous", "Prev Panel"),
+        ("r", "run_demo", "Run Demo"),
     ]
 
     def __init__(self, registry: DemoRegistry, **kwargs) -> None:
@@ -141,8 +135,14 @@ class GalleryScreen(Screen):
             undo_button.set_can_undo(self.undo_service.can_undo())
             run_button = self.query_one("#run-demo", RunDemoButton)
             run_button.set_enabled(demo is not None)
+            params_panel = self.query_one("#demo-params", DemoParameters)
+            defaults = self._get_demo_defaults(demo)
+            params_panel.update_parameters(
+                self._get_demo_param_defs(demo), defaults, self._get_demo_options(demo)
+            )
+            params_panel.refresh(layout=True)
             if demo is None:
-                results_display = self.query_one("#results-display", ResultsDisplay)
+                results_display = self.query_one("#results-display", ScrollableResults)
                 results_display.set_results(None)
         except Exception:
             return
@@ -156,6 +156,62 @@ class GalleryScreen(Screen):
         except Exception:
             return
 
+    @staticmethod
+    def _get_demo_param_defs(demo: BaseDemo | None) -> list[dict[str, object]]:
+        if demo is None:
+            return []
+        return demo.get_parameters()
+
+    def _get_demo_defaults(self, demo: BaseDemo | None) -> dict[str, object]:
+        if demo is None:
+            return {}
+        param_defs = demo.get_parameters()
+        defaults: dict[str, object] = {}
+        server_manager = getattr(self.app, "server_manager", None)
+        server = None
+        if server_manager is not None:
+            try:
+                server = server_manager.connect_to_default()
+            except Exception:
+                server = None
+
+        for param_def in param_defs:
+            name = param_def.get("name")
+            if name == "section_name" and server is not None:
+                try:
+                    sections = list(server.library.sections())
+                    if sections:
+                        defaults[name] = getattr(sections[0], "title", "")
+                except Exception:
+                    continue
+            if name == "query":
+                defaults[name] = ""
+            if name == "limit":
+                defaults[name] = param_def.get("default", 10)
+        return defaults
+
+    def _get_demo_options(self, demo: BaseDemo | None) -> dict[str, list[str]]:
+        if demo is None:
+            return {}
+        options: dict[str, list[str]] = {}
+        server_manager = getattr(self.app, "server_manager", None)
+        if server_manager is None:
+            return options
+        try:
+            server = server_manager.connect_to_default()
+        except Exception:
+            return options
+
+        for param_def in demo.get_parameters():
+            name = param_def.get("name")
+            if name == "section_name":
+                try:
+                    sections = list(server.library.sections())
+                    options[name] = [getattr(section, "title", "") for section in sections]
+                except Exception:
+                    continue
+        return options
+
     def compose(self) -> ComposeResult:
         """Compose the Gallery Screen layout."""
         yield Header()
@@ -166,7 +222,8 @@ class GalleryScreen(Screen):
             with Vertical(id="demo-panel"):
                 yield DemoPanel(id="demo-summary")
                 yield CodeViewer(id="code-viewer")
-                yield ResultsDisplay(id="results-display")
+                yield DemoParameters(id="demo-params")
+                yield ScrollableResults(id="results-display")
                 yield RunDemoButton(id="run-demo")
                 yield UndoButton(id="undo-button")
 
@@ -194,7 +251,7 @@ class GalleryScreen(Screen):
         try:
             undo_button = self.query_one("#undo-button", UndoButton)
             undo_button.set_can_undo(self.undo_service.can_undo())
-            results_display = self.query_one("#results-display", ResultsDisplay)
+            results_display = self.query_one("#results-display", ScrollableResults)
             if snapshot is None:
                 results_display.set_results({"undo": "none"})
             else:
@@ -210,7 +267,7 @@ class GalleryScreen(Screen):
         if demo is None:
             return
 
-        results_display = self.query_one("#results-display", ResultsDisplay)
+        results_display = self.query_one("#results-display", ScrollableResults)
         server = None
         app = self.app
         server_manager = getattr(app, "server_manager", None)
@@ -221,7 +278,8 @@ class GalleryScreen(Screen):
                 results_display.set_results({"error": str(exc)})
                 return
 
-        params: dict[str, object] = {}
+        params_panel = self.query_one("#demo-params", DemoParameters)
+        params = params_panel.get_values()
         is_valid, error = demo.validate_params(params)
         if not is_valid:
             results_display.set_results({"error": error})
@@ -243,6 +301,11 @@ class GalleryScreen(Screen):
         """Handle RunDemoButton presses."""
         del event
         self.action_run_demo()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Fallback handler for run demo button clicks."""
+        if event.button.id == "run-demo":
+            self.action_run_demo()
 
     async def action_dismiss(self, result=None) -> None:
         """Dismiss the gallery screen."""
