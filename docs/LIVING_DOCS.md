@@ -353,12 +353,12 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Gallery integration tests (flow wiring)
 
 #### Sprint 4: Undo System
-- [ ] Undo service implementation
-- [ ] Snapshot system
-- [ ] Undo stack management
-- [ ] Undo button widget
-- [ ] State restoration
-- [ ] Integration tests
+- [x] Undo service implementation
+- [x] Snapshot system
+- [x] Undo stack management
+- [x] Undo button widget
+- [x] State restoration
+- [x] Integration tests
 
 #### Sprint 5: Gallery Demos (15 sprints - one per category)
 - [ ] Server & Connection demos

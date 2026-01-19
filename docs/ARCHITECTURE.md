@@ -179,10 +179,9 @@ Manages multiple Plex server connections:
 
 ### 3. Undo Service (`services/undo_service.py`)
 
-Implements undo/redo functionality:
+Implements undo functionality:
 - **Snapshot Pattern**: Capture state before write operations
-- **Command Pattern**: Encapsulate operations as reversible commands
-- **Stack Management**: Maintain undo/redo stacks
+- **Stack Management**: Maintain undo stack
 - **State Restoration**: Restore previous states
 
 ```python
@@ -192,6 +191,9 @@ class UndoService:
         
     def undo(self):
         """Restore last snapshot"""
+        
+    def peek(self) -> UndoSnapshot | None:
+        """Peek at the latest snapshot"""
         
     def can_undo(self) -> bool:
         """Check if undo is available"""
@@ -275,7 +277,7 @@ PlexiGlassApp
 2. **CategoryMenu**: Hierarchical menu for gallery navigation (implemented)
 3. **CodeViewer**: Syntax-highlighted code display (implemented)
 4. **DemoResults**: Pretty-printed API results (implemented)
-5. **UndoButton**: Contextual undo button with state
+5. **UndoButton**: Contextual undo button with state (implemented)
 
 ### CSS Theming
 

@@ -15,8 +15,10 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
+from plexiglass.services.undo_service import UndoService
 from plexiglass.ui.widgets.code_viewer import CodeViewer
 from plexiglass.ui.widgets.results_display import ResultsDisplay
+from plexiglass.ui.widgets.undo_button import UndoButton
 
 if TYPE_CHECKING:
     from plexiglass.gallery.base_demo import BaseDemo
@@ -114,6 +116,7 @@ class GalleryScreen(Screen):
         self.registry = registry
         self._selected_category: str | None = None
         self._selected_demo: BaseDemo | None = None
+        self.undo_service = UndoService()
 
     @property
     def selected_category(self) -> str | None:
@@ -140,6 +143,8 @@ class GalleryScreen(Screen):
             demo_panel.set_demo(demo)
             code_viewer = self.query_one("#code-viewer", CodeViewer)
             code_viewer.set_demo(demo)
+            undo_button = self.query_one("#undo-button", UndoButton)
+            undo_button.set_can_undo(self.undo_service.can_undo())
         except Exception:
             # Panel might not be composed yet
             pass
@@ -170,8 +175,38 @@ class GalleryScreen(Screen):
                 yield DemoPanel(id="demo-summary")
                 yield CodeViewer(id="code-viewer")
                 yield ResultsDisplay(id="results-display")
+                yield UndoButton(id="undo-button")
 
         yield Footer()
+
+    def record_undo_snapshot(self, operation: str, restore_data: dict[str, object]) -> None:
+        """Record an undo snapshot and enable the undo button."""
+        self.undo_service.snapshot(operation, restore_data)
+        try:
+            undo_button = self.query_one("#undo-button", UndoButton)
+            undo_button.set_can_undo(self.undo_service.can_undo())
+        except Exception:
+            return
+
+    def perform_undo(self) -> None:
+        """Perform undo and display snapshot details."""
+        snapshot = self.undo_service.undo()
+        try:
+            undo_button = self.query_one("#undo-button", UndoButton)
+            undo_button.set_can_undo(self.undo_service.can_undo())
+            results_display = self.query_one("#results-display", ResultsDisplay)
+            if snapshot is None:
+                results_display.set_results({"undo": "none"})
+            else:
+                results_display.set_results(
+                    {"undo_operation": snapshot.operation, "restore_data": snapshot.restore_data}
+                )
+        except Exception:
+            return
+
+    def on_undo_button_pressed(self, event: UndoButton.Pressed) -> None:
+        """Handle UndoButton presses."""
+        self.perform_undo()
 
     async def action_dismiss(self, result=None) -> None:
         """Dismiss the gallery screen."""

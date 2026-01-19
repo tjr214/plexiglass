@@ -44,6 +44,11 @@
 
 .results-display {
     height: 1fr;
+    margin: 0 0 1 0;
+}
+
+#undo-button {
+    width: 16;
 }
 
 #demo-panel:focus {

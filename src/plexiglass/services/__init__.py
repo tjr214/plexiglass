@@ -13,5 +13,12 @@ from plexiglass.services.exceptions import (
     ServiceError,
 )
 from plexiglass.services.server_manager import ServerManager
+from plexiglass.services.undo_service import UndoService
 
-__all__ = ["ServerManager", "ServiceError", "ConnectionError", "ServerNotFoundError"]
+__all__ = [
+    "ServerManager",
+    "UndoService",
+    "ServiceError",
+    "ConnectionError",
+    "ServerNotFoundError",
+]
