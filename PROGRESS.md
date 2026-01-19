@@ -148,8 +148,8 @@
 
 ### 🔄 Sprint 5: Gallery Demos (15 sub-sprints)
 
-- [ ] Server & Connection demos
-- [ ] Library Management demos
+- [x] Server & Connection demos (starter set)
+- [x] Library Management demos (starter set)
 - [ ] Media Operations demos
 - [ ] Playback & Clients demos
 - [ ] Collections & Playlists demos

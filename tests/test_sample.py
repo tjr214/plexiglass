@@ -45,7 +45,7 @@ class TestHelloPlex:
         "name,expected",
         [
             ("Plex", "Hello, Plex!"),
-            ("Tim", "Hello, Tim!"),
+            ("Friend", "Hello, Friend!"),
             ("Media Server", "Hello, Media Server!"),
         ],
     )

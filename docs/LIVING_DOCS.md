@@ -361,8 +361,8 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Integration tests
 
 #### Sprint 5: Gallery Demos (15 sprints - one per category)
-- [ ] Server & Connection demos
-- [ ] Library Management demos
+- [x] Server & Connection demos (starter set)
+- [x] Library Management demos (starter set)
 - [ ] Media Operations demos (Movies, TV, Music, Photos)
 - [ ] Playback & Clients demos
 - [ ] Collections & Playlists demos
