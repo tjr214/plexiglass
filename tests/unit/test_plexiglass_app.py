@@ -786,7 +786,7 @@ class TestMainScreen:
             await pilot.pause()
 
             # Assert
-            assert app.screen.__class__.__name__ == "GalleryScreen" or app.screen.id == "gallery"
+            assert app.screen.__class__.__name__ == "GalleryScreen"
 
     @pytest.mark.asyncio
     async def test_main_screen_auto_refreshes(self, sample_config_path: Path) -> None:

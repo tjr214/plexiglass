@@ -23,7 +23,30 @@ from plexapi.server import PlexServer
 from textual.widgets import Button, Checkbox, Footer, Header, Input, Static
 
 from plexiglass.config.loader import ConfigLoader
+from plexiglass.gallery.registry import DemoRegistry
+from plexiglass.gallery.demos.collections.list_collections import ListCollectionsDemo
+from plexiglass.gallery.demos.collections.list_playlists import ListPlaylistsDemo
+from plexiglass.gallery.demos.library.list_library_items import ListLibraryItemsDemo
+from plexiglass.gallery.demos.library.list_library_sections import ListLibrarySectionsDemo
+from plexiglass.gallery.demos.library.search_library import SearchLibraryDemo
+from plexiglass.gallery.demos.media.list_artists import ListArtistsDemo
+from plexiglass.gallery.demos.media.list_movies import ListMoviesDemo
+from plexiglass.gallery.demos.media.list_shows import ListShowsDemo
+from plexiglass.gallery.demos.myp.account_details import MyPlexAccountDetailsDemo
+from plexiglass.gallery.demos.myp.list_devices import MyPlexDevicesDemo
+from plexiglass.gallery.demos.playback.list_play_queues import ListPlayQueuesDemo
+from plexiglass.gallery.demos.playback.list_playback_sessions import ListPlaybackSessionsDemo
+from plexiglass.gallery.demos.playback.list_recent_plays import ListRecentPlaysDemo
+from plexiglass.gallery.demos.server.get_server_info import GetServerInfoDemo
+from plexiglass.gallery.demos.server.list_server_clients import ListServerClientsDemo
+from plexiglass.gallery.demos.server.list_server_libraries import ListServerLibrariesDemo
+from plexiglass.gallery.demos.server.list_server_sessions import ListServerSessionsDemo
+from plexiglass.gallery.demos.settings.list_server_preferences import ListServerPreferencesDemo
+from plexiglass.gallery.demos.settings.list_server_settings import ListServerSettingsDemo
+from plexiglass.gallery.demos.users.list_shared_libraries import ListSharedLibrariesDemo
+from plexiglass.gallery.demos.users.list_users import ListUsersDemo
 from plexiglass.services.server_manager import ServerManager
+from plexiglass.ui.screens.gallery_screen import GalleryScreen
 
 
 class DashboardSummary(Static):
@@ -860,36 +883,6 @@ class ConfigSetupScreen(Screen):
         return server.friendlyName
 
 
-class GalleryScreen(Screen):
-    """Gallery screen for python-plexapi feature categories."""
-
-    CATEGORY_NAMES = [
-        "Server & Connection",
-        "Library Management",
-        "Media Operations",
-        "Playback & Clients",
-        "Collections & Playlists",
-        "Users & Sharing",
-        "MyPlex Account",
-        "Settings & Preferences",
-        "Search & Discovery",
-        "Sync & Offline",
-        "Alerts & Monitoring",
-        "Integrations",
-        "Media Analysis",
-        "Utilities",
-        "Advanced Features",
-    ]
-
-    def compose(self) -> ComposeResult:
-        yield Header()
-
-        for category in self.CATEGORY_NAMES:
-            yield Static(category, classes="category")
-
-        yield Footer()
-
-
 class PlexiGlassApp(App):
     """
     PlexiGlass - Multi-server Plex dashboard and python-plexapi feature gallery.
@@ -903,7 +896,6 @@ class PlexiGlassApp(App):
 
     SCREENS = {
         "main": MainScreen,
-        "gallery": GalleryScreen,
     }
     DEFAULT_SCREEN = "main"
 
@@ -947,7 +939,9 @@ class PlexiGlassApp(App):
 
     def action_show_gallery(self) -> None:
         """Switch to the Gallery screen."""
-        self.switch_screen("gallery")
+        registry = self._build_demo_registry()
+        screen = GalleryScreen(registry)
+        self.push_screen(screen)
 
     def action_show_main(self) -> None:
         """Switch to the Main screen."""
@@ -974,6 +968,32 @@ class PlexiGlassApp(App):
 
     def _build_config_setup_screen(self) -> ConfigSetupScreen:
         return ConfigSetupScreen(self.config_path)
+
+    @staticmethod
+    def _build_demo_registry() -> DemoRegistry:
+        registry = DemoRegistry()
+        registry.register(GetServerInfoDemo)
+        registry.register(ListServerSessionsDemo)
+        registry.register(ListServerClientsDemo)
+        registry.register(ListServerLibrariesDemo)
+        registry.register(ListLibrarySectionsDemo)
+        registry.register(ListLibraryItemsDemo)
+        registry.register(SearchLibraryDemo)
+        registry.register(ListMoviesDemo)
+        registry.register(ListShowsDemo)
+        registry.register(ListArtistsDemo)
+        registry.register(ListPlayQueuesDemo)
+        registry.register(ListPlaybackSessionsDemo)
+        registry.register(ListRecentPlaysDemo)
+        registry.register(ListCollectionsDemo)
+        registry.register(ListPlaylistsDemo)
+        registry.register(ListUsersDemo)
+        registry.register(ListSharedLibrariesDemo)
+        registry.register(MyPlexAccountDetailsDemo)
+        registry.register(MyPlexDevicesDemo)
+        registry.register(ListServerSettingsDemo)
+        registry.register(ListServerPreferencesDemo)
+        return registry
 
     def action_help(self) -> None:
         """Placeholder help action (Textual will handle help overlay)."""

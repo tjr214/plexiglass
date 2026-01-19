@@ -16,39 +16,17 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
 from plexiglass.services.undo_service import UndoService
+from plexiglass.services.exceptions import ConnectionError
+from plexiglass.ui.widgets.category_menu import CategoryMenu
 from plexiglass.ui.widgets.code_viewer import CodeViewer
+from plexiglass.ui.widgets.demo_list import DemoList
 from plexiglass.ui.widgets.results_display import ResultsDisplay
+from plexiglass.ui.widgets.run_demo_button import RunDemoButton
 from plexiglass.ui.widgets.undo_button import UndoButton
 
 if TYPE_CHECKING:
     from plexiglass.gallery.base_demo import BaseDemo
     from plexiglass.gallery.registry import DemoRegistry
-
-
-class CategoryList(Static):
-    """Widget displaying available demo categories."""
-
-    def __init__(self, categories: list[str], **kwargs) -> None:
-        """
-        Initialize category list.
-
-        Args:
-            categories: List of category names to display
-        """
-        super().__init__(**kwargs)
-        self.categories = categories
-        self.add_class("category-list")
-
-    def render(self) -> str:
-        """Render the category list."""
-        if not self.categories:
-            return "No categories available"
-
-        lines = ["📚 Gallery Categories:", ""]
-        for i, category in enumerate(self.categories, 1):
-            lines.append(f"{i}. {category}")
-
-        return "\n".join(lines)
 
 
 class DemoPanel(Static):
@@ -98,11 +76,21 @@ class GalleryScreen(Screen):
     - Results display
     """
 
+    BINDINGS = [
+        ("escape", "dismiss", "Back to Dashboard"),
+        ("q", "dismiss", "Quit Gallery"),
+        ("tab", "focus_next", "Next Panel"),
+        ("shift+tab", "focus_previous", "Prev Panel"),
+        ("r", "run_demo", "Run Demo"),
+    ]
+
     TITLE = "PlexiGlass API Gallery"
     CSS_PATH = "../styles/gallery.tcss"
     BINDINGS = [
         ("escape", "dismiss", "Back to Dashboard"),
         ("q", "dismiss", "Quit Gallery"),
+        ("tab", "focus_next", "Next Panel"),
+        ("shift+tab", "focus_previous", "Prev Panel"),
     ]
 
     def __init__(self, registry: DemoRegistry, **kwargs) -> None:
@@ -117,6 +105,7 @@ class GalleryScreen(Screen):
         self._selected_category: str | None = None
         self._selected_demo: BaseDemo | None = None
         self.undo_service = UndoService()
+        self._demo_list_initialized = False
 
     @property
     def selected_category(self) -> str | None:
@@ -127,6 +116,12 @@ class GalleryScreen(Screen):
     def selected_category(self, category: str | None) -> None:
         """Set the currently selected category."""
         self._selected_category = category
+        try:
+            demo_list = self.query_one("#demo-list", DemoList)
+            demos = self.registry.get_demos_by_category(category) if category else []
+            demo_list.update_demos(demos)
+        except Exception:
+            return
 
     @property
     def selected_demo(self) -> BaseDemo | None:
@@ -137,7 +132,6 @@ class GalleryScreen(Screen):
     def selected_demo(self, demo: BaseDemo | None) -> None:
         """Set the currently selected demo."""
         self._selected_demo = demo
-        # Update the demo panel if it exists
         try:
             demo_panel = self.query_one("#demo-summary", DemoPanel)
             demo_panel.set_demo(demo)
@@ -145,39 +139,13 @@ class GalleryScreen(Screen):
             code_viewer.set_demo(demo)
             undo_button = self.query_one("#undo-button", UndoButton)
             undo_button.set_can_undo(self.undo_service.can_undo())
+            run_button = self.query_one("#run-demo", RunDemoButton)
+            run_button.set_enabled(demo is not None)
+            if demo is None:
+                results_display = self.query_one("#results-display", ResultsDisplay)
+                results_display.set_results(None)
         except Exception:
-            # Panel might not be composed yet
-            pass
-
-    def get_current_demos(self) -> list[BaseDemo]:
-        """
-        Get demos for the currently selected category.
-
-        Returns:
-            List of demos in the selected category
-        """
-        if self._selected_category is None:
-            return []
-        return self.registry.get_demos_by_category(self._selected_category)
-
-    def compose(self) -> ComposeResult:
-        """Compose the Gallery Screen layout."""
-        yield Header()
-
-        # Main container with sidebar and content area
-        with Horizontal(id="gallery-container"):
-            # Category sidebar
-            categories = self.registry.get_all_categories()
-            yield CategoryList(categories, id="category-list")
-
-            # Demo panel
-            with Vertical(id="demo-panel"):
-                yield DemoPanel(id="demo-summary")
-                yield CodeViewer(id="code-viewer")
-                yield ResultsDisplay(id="results-display")
-                yield UndoButton(id="undo-button")
-
-        yield Footer()
+            return
 
     def record_undo_snapshot(self, operation: str, restore_data: dict[str, object]) -> None:
         """Record an undo snapshot and enable the undo button."""
@@ -185,6 +153,38 @@ class GalleryScreen(Screen):
         try:
             undo_button = self.query_one("#undo-button", UndoButton)
             undo_button.set_can_undo(self.undo_service.can_undo())
+        except Exception:
+            return
+
+    def compose(self) -> ComposeResult:
+        """Compose the Gallery Screen layout."""
+        yield Header()
+
+        with Horizontal(id="gallery-container"):
+            yield CategoryMenu(self.registry, id="category-menu")
+            yield DemoList([], id="demo-list")
+            with Vertical(id="demo-panel"):
+                yield DemoPanel(id="demo-summary")
+                yield CodeViewer(id="code-viewer")
+                yield ResultsDisplay(id="results-display")
+                yield RunDemoButton(id="run-demo")
+                yield UndoButton(id="undo-button")
+
+        yield Footer()
+
+    def on_category_menu_category_selected(self, event: CategoryMenu.CategorySelected) -> None:
+        """Handle category selection from the menu."""
+        self.selected_category = event.category
+        self.selected_demo = None
+
+    def on_demo_list_demo_selected(self, event: DemoList.DemoSelected) -> None:
+        """Handle demo selection from the list."""
+        self.selected_demo = event.demo
+
+    def on_mount(self) -> None:
+        """Set initial focus for keyboard navigation."""
+        try:
+            self.query_one("#category-menu", CategoryMenu).focus()
         except Exception:
             return
 
@@ -204,9 +204,45 @@ class GalleryScreen(Screen):
         except Exception:
             return
 
+    def action_run_demo(self) -> None:
+        """Run the currently selected demo and display results."""
+        demo = self._selected_demo
+        if demo is None:
+            return
+
+        results_display = self.query_one("#results-display", ResultsDisplay)
+        server = None
+        app = self.app
+        server_manager = getattr(app, "server_manager", None)
+        if server_manager is not None:
+            try:
+                server = server_manager.connect_to_default()
+            except ConnectionError as exc:
+                results_display.set_results({"error": str(exc)})
+                return
+
+        params: dict[str, object] = {}
+        is_valid, error = demo.validate_params(params)
+        if not is_valid:
+            results_display.set_results({"error": error})
+            return
+
+        try:
+            results = demo.execute(server, params)
+        except Exception as exc:  # noqa: BLE001
+            results_display.set_results({"error": str(exc)})
+            return
+
+        results_display.set_results(results)
+
     def on_undo_button_pressed(self, event: UndoButton.Pressed) -> None:
         """Handle UndoButton presses."""
         self.perform_undo()
+
+    def on_run_demo_button_pressed(self, event: RunDemoButton.Pressed) -> None:
+        """Handle RunDemoButton presses."""
+        del event
+        self.action_run_demo()
 
     async def action_dismiss(self, result=None) -> None:
         """Dismiss the gallery screen."""

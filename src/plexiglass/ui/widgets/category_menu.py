@@ -13,6 +13,8 @@ from textual.containers import VerticalScroll
 from textual.message import Message
 from textual.widgets import Label, ListItem, ListView
 
+from rich.text import Text
+
 if TYPE_CHECKING:
     from plexiglass.gallery.registry import DemoRegistry
 
@@ -45,6 +47,11 @@ class CategoryMenu(VerticalScroll):
     CategoryMenu > ListView > ListItem {
         padding: 0 1;
         height: auto;
+    }
+
+    CategoryMenu > ListView > ListItem > Label {
+        width: 100%;
+        text-wrap: wrap;
     }
 
     CategoryMenu > ListView > ListItem:hover {
@@ -129,7 +136,7 @@ class CategoryMenu(VerticalScroll):
         """
         return self.CATEGORY_EMOJIS.get(category, "📋")
 
-    def format_category_display(self, category: str) -> str:
+    def format_category_display(self, category: str) -> Text:
         """
         Format category display string with emoji and demo count.
 
@@ -137,11 +144,13 @@ class CategoryMenu(VerticalScroll):
             category: Category name
 
         Returns:
-            Formatted string like "📡 Server & Connection (5)"
+            Rich Text object for wrapping category labels
         """
         emoji = self.get_category_emoji(category)
         count = self.registry.get_category_count(category)
-        return f"{emoji} {category} ({count})"
+        text = Text(f"{emoji} {category} ({count})")
+        text.no_wrap = False
+        return text
 
     def select_category(self, category: str) -> None:
         """
@@ -182,7 +191,9 @@ class CategoryMenu(VerticalScroll):
         items = []
         for index, category in enumerate(categories):
             display_text = self.format_category_display(category)
-            list_item = ListItem(Label(display_text))
+            label = Label(display_text)
+            label.styles.text_wrap = "wrap"
+            list_item = ListItem(label)
             # Map the item index to the category name
             self._category_map[index] = category
             items.append(list_item)

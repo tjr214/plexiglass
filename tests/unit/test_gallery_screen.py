@@ -115,7 +115,8 @@ class TestGalleryScreenLayout:
     @pytest.mark.asyncio
     async def test_gallery_screen_displays_categories(self, demo_registry):
         """Test that GalleryScreen displays the available categories."""
-        from plexiglass.ui.screens.gallery_screen import GalleryScreen, CategoryList
+        from plexiglass.ui.screens.gallery_screen import GalleryScreen
+        from plexiglass.ui.widgets.category_menu import CategoryMenu
         from textual.app import App
 
         class TestApp(App):
@@ -128,11 +129,11 @@ class TestGalleryScreenLayout:
             await pilot.app.push_screen(screen)
 
             # Get the category list widget and check its content
-            category_list = screen.query_one("#category-list", CategoryList)
-            rendered_text = category_list.render()
+            category_menu = screen.query_one("#category-menu", CategoryMenu)
+            categories = category_menu.get_categories()
 
-            # Should show both categories
-            assert "Test Category" in rendered_text or "Another Category" in rendered_text
+            assert "Test Category" in categories
+            assert "Another Category" in categories
 
     @pytest.mark.asyncio
     async def test_gallery_screen_has_category_list(self, demo_registry):
@@ -232,8 +233,7 @@ class TestGalleryScreenCategorySelection:
             # Set category
             screen.selected_category = "Test Category"
 
-            # Get demos for that category
-            demos = screen.get_current_demos()
+            demos = screen.registry.get_demos_by_category("Test Category")
             assert len(demos) == 2  # SampleTestDemo and SecondTestDemo
             assert all(d.category == "Test Category" for d in demos)
 
