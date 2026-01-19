@@ -365,8 +365,8 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Library Management demos (starter set)
 - [x] Media Operations demos (starter set)
 - [x] Playback & Clients demos (starter set)
-- [ ] Collections & Playlists demos
-- [ ] Users & Sharing demos
+- [x] Collections & Playlists demos (starter set)
+- [x] Users & Sharing demos (starter set)
 - [ ] MyPlex Account demos
 - [ ] Settings demos
 - [ ] Search & Discovery demos
