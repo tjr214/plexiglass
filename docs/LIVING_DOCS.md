@@ -385,6 +385,8 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Help system with search
 - [x] Keyboard shortcuts manager
 - [x] CSS theming polish (8 comprehensive CSS files, dark + light themes)
+- [x] Gallery defaults avoid auto-connecting without an active server session
+- [x] Gallery stylesheet cleaned for Textual-compatible selectors
 - [ ] Performance optimization
 - [ ] Final integration testing
 

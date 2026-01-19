@@ -171,7 +171,8 @@ class GalleryScreen(Screen):
         server = None
         if server_manager is not None:
             try:
-                server = server_manager.connect_to_default()
+                if server_manager.get_connected_servers():
+                    server = server_manager.connect_to_default()
             except Exception:
                 server = None
 
@@ -198,6 +199,8 @@ class GalleryScreen(Screen):
         if server_manager is None:
             return options
         try:
+            if not server_manager.get_connected_servers():
+                return options
             server = server_manager.connect_to_default()
         except Exception:
             return options

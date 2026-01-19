@@ -457,8 +457,9 @@ class AppState:
 1. **Async Operations**: Use `async/await` for API calls
 2. **Caching**: Cache server responses with TTL
 3. **Lazy Loading**: Load gallery demos on-demand
-4. **Background Workers**: Use Textual workers for long operations
-5. **Connection Pooling**: Reuse Plex API connections
+4. **Non-Blocking UI**: Avoid implicit server connections while rendering or selecting demos
+5. **Background Workers**: Use Textual workers for long operations
+6. **Connection Pooling**: Reuse Plex API connections
 
 ---
 

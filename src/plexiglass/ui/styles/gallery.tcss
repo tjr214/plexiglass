@@ -244,7 +244,6 @@ GalleryScreen Footer .footer--key {
     background: $accent-primary;
     color: $bg-base;
     padding: 0 1;
-    border-radius: 1;
 }
 
 GalleryScreen Footer .footer--description {
@@ -418,17 +417,6 @@ GalleryScreen Footer .footer--description {
 /* ============================================================================
  * RESPONSIVE ADJUSTMENTS
  * ============================================================================ */
-
-/* When terminal width is small, adjust panel widths */
-@media (max-width: 100) {
-    .category-menu {
-        width: 25;
-    }
-    
-    .demo-list {
-        width: 30;
-    }
-}
 
 /* ============================================================================
  * END GALLERY STYLES
