@@ -48,6 +48,18 @@ from plexiglass.gallery.demos.users.list_users import ListUsersDemo
 from plexiglass.gallery.demos.search.global_search import GlobalSearchDemo
 from plexiglass.gallery.demos.search.hub_search import HubSearchDemo
 from plexiglass.gallery.demos.search.get_recommendations import GetRecommendationsDemo
+from plexiglass.gallery.demos.sync.list_sync_items import ListSyncItemsDemo
+from plexiglass.gallery.demos.sync.get_sync_status import GetSyncStatusDemo
+from plexiglass.gallery.demos.alerts.list_activity_alerts import ListActivityAlertsDemo
+from plexiglass.gallery.demos.alerts.monitor_timeline import MonitorTimelineDemo
+from plexiglass.gallery.demos.integrations.discover_sonos import DiscoverSonosDemo
+from plexiglass.gallery.demos.integrations.list_integrations import ListIntegrationsDemo
+from plexiglass.gallery.demos.analysis.get_media_streams import GetMediaStreamsDemo
+from plexiglass.gallery.demos.analysis.analyze_codec_info import AnalyzeCodecInfoDemo
+from plexiglass.gallery.demos.utilities.get_download_url import GetDownloadURLDemo
+from plexiglass.gallery.demos.utilities.get_thumbnail_url import GetThumbnailURLDemo
+from plexiglass.gallery.demos.advanced.get_server_capabilities import GetServerCapabilitiesDemo
+from plexiglass.gallery.demos.advanced.list_server_activities import ListServerActivitiesDemo
 from plexiglass.services.server_manager import ServerManager
 from plexiglass.ui.screens.gallery_screen import GalleryScreen
 
@@ -999,6 +1011,18 @@ class PlexiGlassApp(App):
         registry.register(GlobalSearchDemo)
         registry.register(HubSearchDemo)
         registry.register(GetRecommendationsDemo)
+        registry.register(ListSyncItemsDemo)
+        registry.register(GetSyncStatusDemo)
+        registry.register(ListActivityAlertsDemo)
+        registry.register(MonitorTimelineDemo)
+        registry.register(DiscoverSonosDemo)
+        registry.register(ListIntegrationsDemo)
+        registry.register(GetMediaStreamsDemo)
+        registry.register(AnalyzeCodecInfoDemo)
+        registry.register(GetDownloadURLDemo)
+        registry.register(GetThumbnailURLDemo)
+        registry.register(GetServerCapabilitiesDemo)
+        registry.register(ListServerActivitiesDemo)
         return registry
 
     def action_help(self) -> None:
