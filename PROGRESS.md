@@ -2,8 +2,8 @@
 
 **Project**: PlexiGlass - A Colorful Textual TUI Dashboard & API Gallery for Plex Media Servers  
 **Last Updated**: January 19, 2026  
-**Current Phase**: Phase 3 Implementation - Sprint 4 Next  
-**Overall Status**: ✅ Gallery Foundation 100% Complete
+**Current Phase**: Phase 3 Implementation - Sprint 5 (9/15 Categories Complete)  
+**Overall Status**: ✅ Search & Discovery Demos Added (Category 9)
 
 ---
 
@@ -157,7 +157,7 @@
 - [x] Users & Sharing demos (starter set)
 - [x] MyPlex Account demos (starter set)
 - [x] Settings demos (starter set)
-- [ ] Search & Discovery demos
+- [x] Search & Discovery demos (Global Search, Hub Search, Recommendations)
 - [ ] Sync demos
 - [ ] Alerts & Monitoring demos
 - [ ] Integrations demos

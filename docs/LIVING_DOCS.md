@@ -3,7 +3,7 @@
 **Project**: PlexiGlass  
 **Version**: 0.1.0  
 **Last Updated**: 2026-01-19  
-**Status**: Sprint 3 Gallery Foundation Complete ✅ (100%)
+**Status**: Sprint 5 - Category 9 Complete ✅ (Search & Discovery Added)
 
 ---
 
@@ -371,7 +371,7 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Users & Sharing demos (starter set)
 - [x] MyPlex Account demos (starter set)
 - [x] Settings demos (starter set)
-- [ ] Search & Discovery demos
+- [x] Search & Discovery demos (Global Search, Hub Search, Recommendations)
 - [ ] Sync demos
 - [ ] Alerts & Monitoring demos
 - [ ] Integrations demos

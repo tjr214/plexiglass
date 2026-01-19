@@ -45,6 +45,9 @@ from plexiglass.gallery.demos.settings.list_server_preferences import ListServer
 from plexiglass.gallery.demos.settings.list_server_settings import ListServerSettingsDemo
 from plexiglass.gallery.demos.users.list_shared_libraries import ListSharedLibrariesDemo
 from plexiglass.gallery.demos.users.list_users import ListUsersDemo
+from plexiglass.gallery.demos.search.global_search import GlobalSearchDemo
+from plexiglass.gallery.demos.search.hub_search import HubSearchDemo
+from plexiglass.gallery.demos.search.get_recommendations import GetRecommendationsDemo
 from plexiglass.services.server_manager import ServerManager
 from plexiglass.ui.screens.gallery_screen import GalleryScreen
 
@@ -993,6 +996,9 @@ class PlexiGlassApp(App):
         registry.register(MyPlexDevicesDemo)
         registry.register(ListServerSettingsDemo)
         registry.register(ListServerPreferencesDemo)
+        registry.register(GlobalSearchDemo)
+        registry.register(HubSearchDemo)
+        registry.register(GetRecommendationsDemo)
         return registry
 
     def action_help(self) -> None:
