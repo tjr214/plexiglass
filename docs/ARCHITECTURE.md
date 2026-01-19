@@ -272,8 +272,8 @@ PlexiGlassApp
 ### Custom Widgets
 
 1. **ServerCard**: Displays server status with metrics
-2. **CategoryMenu**: Hierarchical menu for gallery navigation
-3. **CodeViewer**: Syntax-highlighted code display
+2. **CategoryMenu**: Hierarchical menu for gallery navigation (implemented)
+3. **CodeViewer**: Syntax-highlighted code display (implemented)
 4. **DemoResults**: Pretty-printed API results
 5. **UndoButton**: Contextual undo button with state
 

@@ -87,7 +87,8 @@ class TestGalleryScreenCreation:
 
         screen = GalleryScreen(demo_registry)
         assert hasattr(screen, "TITLE")
-        assert len(screen.TITLE) > 0
+        assert screen.TITLE is not None
+        assert str(screen.TITLE)
 
 
 class TestGalleryScreenLayout:
@@ -168,7 +169,7 @@ class TestGalleryScreenLayout:
             await pilot.app.push_screen(screen)
 
             # Look for demo panel widget
-            demo_panel = screen.query_one("#demo-panel", Static)
+            demo_panel = screen.query_one("#demo-summary", Static)
             assert demo_panel is not None
 
 
@@ -304,7 +305,7 @@ class TestGalleryScreenDemoSelection:
             await pilot.pause()
 
             # Check that demo panel shows demo info
-            demo_panel = screen.query_one("#demo-panel", DemoPanel)
+            demo_panel = screen.query_one("#demo-summary", DemoPanel)
             panel_text = demo_panel.render()
 
             # Should contain demo name or description
@@ -327,5 +328,12 @@ class TestGalleryScreenKeybindings:
 
         screen = GalleryScreen(demo_registry)
         # Check for escape or q binding (BINDINGS is a list of tuples)
-        bindings = [b[0] for b in screen.BINDINGS] if hasattr(screen, "BINDINGS") else []
-        assert "escape" in bindings or "q" in bindings
+        bindings = screen.BINDINGS if hasattr(screen, "BINDINGS") else []
+        binding_keys = []
+        for binding in bindings:
+            key = getattr(binding, "key", None)
+            if key is None and isinstance(binding, tuple):
+                key = binding[0]
+            if key is not None:
+                binding_keys.append(key)
+        assert "escape" in binding_keys or "q" in binding_keys

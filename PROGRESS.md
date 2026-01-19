@@ -3,7 +3,7 @@
 **Project**: PlexiGlass - A Colorful Textual TUI Dashboard & API Gallery for Plex Media Servers  
 **Last Updated**: January 18, 2026  
 **Current Phase**: Phase 3 Implementation - Sprint 3 In Progress  
-**Overall Status**: 🔄 Gallery Foundation 85% Complete
+**Overall Status**: 🔄 Gallery Foundation 90% Complete
 
 ---
 
@@ -123,7 +123,7 @@
 - [x] Edit config flow (reuse builder + load existing config)
 - [x] Dashboard CSS layout and theming
 
-### 🔄 Sprint 3: Gallery Foundation (IN PROGRESS - 85%)
+### 🔄 Sprint 3: Gallery Foundation (IN PROGRESS - 90%)
 
 - [x] Base demo class implementation (TDD complete - 8 tests)
 - [x] Demo registry system (TDD complete - 9 tests)
@@ -133,8 +133,8 @@
 - [x] Gallery screen layout (TDD complete - 15 tests, 93% coverage)
 - [x] Gallery screen CSS styling
 - [x] **Category menu navigation widget (TDD complete - 18 tests, 90% coverage)** - **JUST COMPLETED**
-- [ ] Code viewer widget - NEXT
-- [ ] Results display widget
+- [x] Code viewer widget complete (TDD + integration tests)
+- [ ] Results display widget - NEXT
 - [ ] Gallery integration tests
 
 ### 🔄 Sprint 4: Undo System (READY)
@@ -283,7 +283,7 @@ uv sync --all-extras
 ### Review Documentation
 
 1. `PROGRESS.md` (this file)
-2. `docs/SESSION_3_SUMMARY.md`
+2. `docs/SESSION_X_SUMMARY.md` (latest one)
 3. `docs/LIVING_DOCS.md`
 4. `docs/ARCHITECTURE.md`
 
@@ -308,6 +308,7 @@ Ask the assistant:
   - ✅ Gallery Screen layout complete (15 tests, 93% coverage)
   - ✅ Gallery CSS styling complete
   - ✅ **CategoryMenu widget complete** (18 tests, 90% coverage)
+  - ✅ **CodeViewer widget complete** (TDD + integration tests)
 
 ---
 

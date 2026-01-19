@@ -3,7 +3,7 @@
 **Project**: PlexiGlass  
 **Version**: 0.1.0  
 **Last Updated**: 2026-01-18  
-**Status**: Sprint 3 Gallery Foundation In Progress 🔄 (85%)
+**Status**: Sprint 3 Gallery Foundation In Progress 🔄 (90%)
 
 ---
 
@@ -347,9 +347,9 @@ undo_service.undo()  # Restores "Old Title"
 - [x] Full TDD Red-Green-Refactor cycle demonstrated
 - [x] Gallery screen layout (15 tests, 93% coverage)
 - [x] Gallery screen CSS styling
-- [x] **Category menu navigation widget (18 tests, 90% coverage)** - **JUST COMPLETED**
-- [ ] Code viewer widget - NEXT
-- [ ] Results display widget
+- [x] **Category menu navigation widget (18 tests, 90% coverage)**
+- [x] **Code viewer widget (TDD complete)** - **JUST COMPLETED**
+- [ ] Results display widget - NEXT
 - [ ] Gallery integration tests
 
 #### Sprint 4: Undo System

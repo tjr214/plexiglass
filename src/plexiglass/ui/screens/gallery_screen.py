@@ -15,6 +15,8 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
+from plexiglass.ui.widgets.code_viewer import CodeViewer
+
 if TYPE_CHECKING:
     from plexiglass.gallery.base_demo import BaseDemo
     from plexiglass.gallery.registry import DemoRegistry
@@ -133,8 +135,10 @@ class GalleryScreen(Screen):
         self._selected_demo = demo
         # Update the demo panel if it exists
         try:
-            demo_panel = self.query_one("#demo-panel", DemoPanel)
+            demo_panel = self.query_one("#demo-summary", DemoPanel)
             demo_panel.set_demo(demo)
+            code_viewer = self.query_one("#code-viewer", CodeViewer)
+            code_viewer.set_demo(demo)
         except Exception:
             # Panel might not be composed yet
             pass
@@ -161,7 +165,9 @@ class GalleryScreen(Screen):
             yield CategoryList(categories, id="category-list")
 
             # Demo panel
-            yield DemoPanel(id="demo-panel")
+            with Vertical(id="demo-panel"):
+                yield DemoPanel(id="demo-summary")
+                yield CodeViewer(id="code-viewer")
 
         yield Footer()
 

@@ -24,15 +24,24 @@
 }
 
 /* Demo Panel */
-.demo-panel {
+#demo-panel {
     width: 1fr;
     border: solid $primary;
     background: $surface;
-    padding: 1 2;
+    padding: 1;
     margin: 1;
 }
 
-.demo-panel:focus {
+#demo-summary {
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+.code-viewer {
+    height: 1fr;
+}
+
+#demo-panel:focus {
     border: heavy $accent;
 }
 
