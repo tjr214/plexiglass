@@ -9,11 +9,11 @@
 
 ## 📊 Quick Status Overview
 
-| Phase | Status | Progress |
-|-------|--------|----------|
-| **Phase 1: Initialization** | ✅ Complete | 100% |
-| **Phase 2: Planning & Architecture** | ✅ Complete | 100% |
-| **Phase 3: Implementation** | 🔄 In Progress | ~40% |
+| Phase                                | Status         | Progress |
+| ------------------------------------ | -------------- | -------- |
+| **Phase 1: Initialization**          | ✅ Complete    | 100%     |
+| **Phase 2: Planning & Architecture** | ✅ Complete    | 100%     |
+| **Phase 3: Implementation**          | 🔄 In Progress | ~40%     |
 
 ---
 
@@ -25,6 +25,7 @@
 2. **python-plexapi Feature Gallery**: Interactive demonstration of 200+ API features with live examples, code snippets, and safe testing with UNDO capability
 
 **Key Differentiators**:
+
 - Beautiful, colorful TUI with CSS theming
 - Safe write testing with built-in undo system
 - Comprehensive API reference (15 categories, 200+ features)
@@ -98,6 +99,7 @@
 ## 🔄 Phase 3: Core Implementation (IN PROGRESS)
 
 ### ✅ Sprint 1: Foundation (COMPLETE)
+
 - [x] Server configuration system
 - [x] Server manager service
 - [x] Basic Textual app structure
@@ -106,6 +108,7 @@
 - [x] Configuration loader with env support
 
 ### ✅ Sprint 2: Dashboard Mode (COMPLETE)
+
 - [x] Server status cards with now-playing sessions
 - [x] Dashboard summary (servers, connections, sessions, libraries)
 - [x] Active sessions panel
@@ -121,6 +124,7 @@
 - [x] Dashboard CSS layout and theming
 
 ### 🔄 Sprint 3: Gallery Foundation (IN PROGRESS - 30%)
+
 - [x] Base demo class implementation (TDD complete - 8 tests)
 - [x] Demo registry system (TDD complete - 9 tests)
 - [ ] Sample demo (proof of concept) - NEXT
@@ -131,6 +135,7 @@
 - [ ] Integration tests
 
 ### 🔄 Sprint 4: Undo System (READY)
+
 - [ ] Undo service implementation
 - [ ] Snapshot system
 - [ ] Undo stack management
@@ -139,6 +144,7 @@
 - [ ] Integration tests
 
 ### 🔄 Sprint 5: Gallery Demos (15 sub-sprints)
+
 - [ ] Server & Connection demos
 - [ ] Library Management demos
 - [ ] Media Operations demos
@@ -156,6 +162,7 @@
 - [ ] Advanced Features demos
 
 ### 🔄 Sprint 6: Polish & Performance (READY)
+
 - [ ] Performance optimization
 - [ ] Error handling
 - [ ] Loading states
@@ -215,6 +222,7 @@ Coverage: ~78%
 ```
 
 **Test Command**:
+
 ```bash
 uv run pytest -v
 ```
@@ -224,6 +232,7 @@ uv run pytest -v
 ## 🚀 Installation & Usage
 
 ### Development Setup
+
 ```bash
 cd /path/to/plexiglass
 uv sync --all-extras
@@ -231,12 +240,14 @@ uv run pytest
 ```
 
 ### Running PlexiGlass
+
 ```bash
 uv run plexiglass
 uv run python -m plexiglass
 ```
 
 ### Configuration
+
 - Default config path: `~/.config/plexiglass/servers.yaml`
 - If missing or invalid, the app blocks and offers a guided setup UI.
 
@@ -258,20 +269,23 @@ uv run python -m plexiglass
 ## 🎬 Next Session: How to Resume
 
 ### Quick Start
+
 ```bash
 cd /path/to/plexiglass
 uv sync --all-extras
-uv run pytest -v
 ```
 
 ### Review Documentation
+
 1. `PROGRESS.md` (this file)
 2. `docs/SESSION_2_SUMMARY.md`
 3. `docs/LIVING_DOCS.md`
 4. `docs/ARCHITECTURE.md`
 
 ### Begin Sprint 3
+
 Ask the assistant:
+
 ```
 "Let's begin Sprint 3: Gallery Foundation"
 ```
@@ -289,4 +303,4 @@ Ask the assistant:
 
 **Status**: 🔄 **SPRINT 3 IN PROGRESS (30%)**
 
-*Last Context Window: Session 3 - Sprint 3 Gallery Foundation*
+_Last Context Window: Session 3 - Sprint 3 Gallery Foundation_
