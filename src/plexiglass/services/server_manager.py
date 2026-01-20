@@ -308,3 +308,51 @@ class ServerManager:
             raise ServerNotFoundError(f"Server '{name}' not found in configuration")
 
         return bool(server_config.get("read_only", False))
+
+    def check_connection_health(self, name: str) -> bool:
+        """
+        Check if a server connection is healthy.
+
+        Args:
+            name: Server name to check
+
+        Returns:
+            True if connection is healthy, False otherwise
+        """
+        if name not in self._connection_pool:
+            return False
+
+        server = self._connection_pool[name]
+        try:
+            # Try to access a lightweight property
+            _ = server.friendlyName
+            return True
+        except Exception:
+            return False
+
+    def get_pool_statistics(self) -> dict[str, Any]:
+        """
+        Get connection pool statistics.
+
+        Returns:
+            Dictionary with pool statistics:
+            - pool_size: Current number of connections
+            - connected_servers: List of connected server names
+            - max_pool_size: Configured maximum pool size (0 = unlimited)
+        """
+        settings = self.config_loader.get_settings()
+        max_size = settings.get("performance", {}).get("pool_max_size", 0)
+
+        return {
+            "pool_size": len(self._connection_pool),
+            "connected_servers": list(self._connection_pool.keys()),
+            "max_pool_size": max_size,
+        }
+
+    def clear_connection_pool(self) -> None:
+        """
+        Clear all connections from pool.
+
+        Disconnects from all servers.
+        """
+        self._connection_pool.clear()
